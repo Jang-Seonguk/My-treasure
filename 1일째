@@ -1,0 +1,63 @@
+데이터 구조 중 한 종류인 큐(Queue) , 스택(Stack)
+
+큐(Queue) 구조의 특징
+  1. 가장 먼저 넣은 데이터를 가장 먼저 꺼낼 수 있는 구조 (FIFO or LILO)
+  2. 스택(Stack)과 꺼내는 순서가 반대이다
+  3. Enqueue - 큐에 데이터를 넣는기능 , Dequeue - 큐에서 데이터를 꺼내는 기능
+  4. Python 은 queue 라이브러리 기능 지원
+  
+  
+  
+  
+  Python 에서 queue 라이브러리를 이용한 코드
+  
+  import queue
+  data_queue = queue.Queue()
+  
+  data_queue.put("원하는 내용")    ##  큐에 데이터 넣기
+  data_queue.qsize()  ## 큐의 사이즈
+  data_queue.get()   ## 데이터 출력 (가장 먼저 들어간 데이터가 가장 먼저 추출됨)
+  
+------------------------------------------------------------------------------------------
+
+변형된 Queue
+
+LifoQueue()로 큐 만들기 (LIFO , 마지막에 들어간게 첫번째로 나옴)
+
+import queue
+data_queue = queue.LifoQueue()
+
+data_queue.put("abcd")
+data_queue.put("가나다라")
+data_queue.qsize()
+data_queue.get()
+  
+-------------------------------------------------------------------------------------------
+
+PriorityQueue() - 데이터를 넣은 순서가 아닌 우선순위에 따라 추출하는 기능
+
+import queue
+data_queue = queue.PriorityQueue()
+
+data_queue.put((10, 'abc'))  ### 튜플 형식으로 데이터가 들어감
+data_queue.put((5, '가나다'))
+data_queue.put((1, 'ABC'))
+data_queue.qsize
+data_queue.get()   ### 우선순위가 낮은것, 즉 1인 'ABC'가 먼저 추출됨
+
+-------------------------------------------------------------------------------------------
+
+Queue는 멀티 태스킹을 위한 프로세스 스케쥴링 방식을 구현하기 위해 많이 사용됨
+
+리스트 변수로 큐를 다루는 enqueue , dequeue 기능 구현해보기
+
+queue_list = list()
+
+def enqueue(data):
+   queue_list.append(data)
+
+def dequeue():
+   data = queue_list[0]
+   del queue_list[0]
+   return data
+
