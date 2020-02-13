@@ -1,5 +1,5 @@
 # include <stdio.h>
-# include <stdlib.h>
+# include <string.h>
 
 struct student {
 	int number;
@@ -21,7 +21,7 @@ int main(void)
 -------------------------------------------------------------
 
 # include <stdio.h>
-# include <stdlib.h>
+# include <string.h>
 
 struct student {
 	int number;
