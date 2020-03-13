@@ -30,16 +30,25 @@ def solution(N, stages):
     answer = []
     RealAnswer = []
     FailRate = 0
-    count = 0
+    countA = 0
     for i in range(1, N + 1):
-        FailRate = stages.count(i) / (len(stages) - count)
-        if FailRate in dict_a:
-            dict_a[FailRate] += [i]
+        if len(stages) - countA == 0:
+            if 0 in dict_a:
+                dict_a[0] += [i]
+            else:
+                dict_a[0] = [i]
+                answer.append(0)
+                
         else:
-            dict_a[FailRate] = [i]
-            answer.append(FailRate)
-        
-        count += stages.count(i)
+            FailRate = stages.count(i) / (len(stages) - countA)
+            if FailRate in dict_a:
+                dict_a[FailRate] += [i]
+                
+            else:
+                dict_a[FailRate] = [i]
+                answer.append(FailRate)
+
+            countA += stages.count(i)
     
     answer.sort(reverse = True)
     for i in answer:
@@ -47,6 +56,3 @@ def solution(N, stages):
     
     return RealAnswer
     
-
-
-# 런타임 오류로 아직 풀지 못함
