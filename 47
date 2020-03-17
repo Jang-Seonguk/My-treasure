@@ -1,0 +1,41 @@
+369 게임 
+
+# include <stdio.h>
+
+int main(void)
+{
+
+	for (int i = 1; i <= 100; i++)
+	{
+		if (i % 10 == 3 || i % 10 == 6 || i % 10 == 9)
+		{
+			if ((i >= 30 && i <= 39) || (i >= 60 && i <= 69) || (i >= 90 && i <= 99))
+			{
+				printf("¦¦ ");
+			}
+			else
+			{
+				printf("¦ ");
+			}
+		}
+		else
+		{
+			if ((i >= 30 && i <= 39) || (i >= 60 && i <= 69) || (i >= 90 && i <= 99))
+			{
+				printf("¦ ");
+			}
+			else
+			{
+				printf("%d ", i);
+			}
+		}
+		
+		if (i % 3 == 0)
+		{
+			printf("\n");
+		}
+
+
+	}
+		return 0;
+}
