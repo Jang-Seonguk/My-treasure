@@ -1,1 +1,109 @@
-.
+학생의 정보를 입력받고 등급을 나누고, 이름순으로 정렬
+
+# 포인터, 구조체 이용
+------------------------------------------------------------------------------------
+
+# include <stdio.h>
+# include <string.h>
+
+
+
+struct student {
+	char name[40];
+	int midterm;
+	int final;
+	int attend;
+	int practice;
+	int grade;
+	int total 
+	
+};
+
+struct student sts[5];
+
+void swap(struct student *a, struct student *b)
+{
+	struct student temp;
+	temp = *a;
+	*a = *b;
+	*b = temp;
+	
+}
+
+void setPortion(float A_portion, float B_portion, float C_portion)
+{
+	int i;
+	float x;
+	x = sizeof(sts) / 64;	
+	for (i = 0; i < 5; i++)
+	{
+		if (i + 1 <= x * A_portion)
+		{
+			sts[i].grade = "A";
+		}
+		else if (i + 1 <= x * B_portion)
+		{
+			sts[i].grade = "B";
+		}
+		else if (i + 1 <= x * C_portion)
+		{
+			sts[i].grade = "C";
+		}
+		else 
+		{
+			sts[i].grade = "D";
+		}
+    }
+}
+
+
+int main(void)
+{
+	
+	int i = 0;
+	int j = 0;
+	
+	FILE *fp = NULL;
+	int c;
+	fp = fopen("students.txt", "r");
+	
+	while (fscanf(fp, "%d", &i) != EOF)
+	{
+		fscanf(fp,"%s %d %d %d %d\n", sts[i].name, &sts[i].midterm, &sts[i].final, &sts[i].attend, &sts[i].practice);
+		sts[i].total = sts[i].midterm + sts[i].final + sts[i].attend + sts[i].practice;
+		i++;	
+	}
+	
+	fclose(fp);
+	
+	for (i = 0; i < 5; i++)
+	{
+		for (j = 0; j < 4 - i; j++)
+		{
+			if (sts[j].total < sts[j + 1].total)
+			{
+				swap(&sts[j] , &sts[j + 1]);
+			}
+		}
+	}
+	
+	setPortion(0.3, 0.7, 0.8);
+	
+	for (i = 0; i < 5; i++)
+	{
+		for (j = 0; j < 4 - i; j++)
+		{
+			if (strcmp(sts[j].name, sts[j + 1].name) > 0)
+			{
+				swap(&sts[j] , &sts[j + 1]);
+			}
+		}
+	}
+	
+	for (i = 0; i < 5; i++)
+	{
+		printf("%s\t%d\t%d\t%d\t%d\t total = %d \t grade = %s\n", sts[i].name, sts[i].midterm, sts[i].final, sts[i].attend, sts[i].practice, sts[i].total, sts[i].grade);
+	}
+	
+	return 0;
+}
