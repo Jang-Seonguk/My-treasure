@@ -1,0 +1,28 @@
+1. 정수로 이루어진 배열과, 배열의 원소의 개수를 인수로 받아 합계를 구하는 int sum(int *array, int number) 함수를 작성하고, 
+그 결과(main() 함수에서 호출하여)를 보여라
+
+---------------------------------------------------------------------------------------------------------------------------
+
+# include <stdio.h>
+
+int sum(int* array, int number)
+{
+	int i, sum = 0;
+	for (i = 0; i < number; i++)
+	{
+		sum += array[i];
+	}
+	return sum;
+}
+
+
+
+
+int main(void)
+{
+	int arr[] = { 2, 3, 4 ,2 , 1 };
+	int x;
+	x = sizeof(arr) / 4;
+	printf("값은 %d 입니다. 크기는 %d 입니다 ", sum(arr, x), sizeof(arr));
+	return 0;
+}
