@@ -1,0 +1,69 @@
+ 2. 두 개의 숫자를 더하는 int add(int num1, int num2), 두개의 숫자를 빼는 int subtract(int num1, int num2), 
+두개의 숫자를 곱하는 int mul(int num1, int num2)를 각각 작성한다.
+사용자가 "add"를 입력하면 두개의 숫자를 추가로 입력받아 add()함수를 호출하여 더한 결과를 출력하고, 
+"sub"를 입력하면 두개의 숫자를 추가로 입력받아 subtract()함수를 호출하여 뺄셈한 결과를 출력한다.
+위의 연산을 사용자가 "quit"을 입력할 때까지 계속 되풀이한다.
+strcmp() 표준함수 사용.
+
+-----------------------------------------------------------------------------------------------------------
+
+# include <stdio.h>
+# include <string.h>
+
+
+int add(int *num1, int *num2)
+{
+	int temp;
+	temp = *num1 + *num2;
+	return temp;
+}
+
+int subtract(int* num1, int* num2)
+{
+	int temp;
+	temp = *num1 - *num2;
+	return temp;
+}
+
+int mul(int* num1, int* num2)
+{
+	int temp;
+	temp = *num1 * *num2;
+	return temp;
+}
+
+
+
+int main(void)
+{
+	char answer[10];
+	int x, y;
+	while (1)
+	{
+		printf("연산을 입력하시오 : ");
+		scanf_s("%s", &answer, sizeof(answer));
+		if (strcmp(answer, "quit") == 0)
+		{
+			break;
+		}
+		printf("숫자를 입력하세요 : ");
+		scanf_s("%d %d", &x, &y, sizeof(x), sizeof(y));
+		if (strcmp(answer, "add") == 0)
+		{
+			printf("입력하신 값은 : %d 입니다.\n", add(&x, &y));
+		}
+		else if (strcmp(answer, "sub") == 0)
+		{
+			printf("입력하신 값은 : %d 입니다.\n", subtract(&x, &y));
+		}
+		else if (strcmp(answer, "mul") == 0)
+		{
+			printf("입력하신 값은 : %d 입니다.\n", mul(&x, &y));
+		}
+		else
+		{
+			printf("잘못 입력하셨습니다.\n");
+		}
+	} 
+	return 0;
+}
