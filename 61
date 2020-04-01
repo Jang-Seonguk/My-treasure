@@ -1,1 +1,159 @@
-.
+대학교 강의 시간표 (아직 미완성)
+
+# include <stdio.h>
+# include <string.h>
+# include <stdlib.h>
+
+
+
+struct student {
+	
+	char grade[100];
+	char number[100];
+	char subname[100];
+	char proname[100];
+	char day[100];
+	char place[100];
+	int gradescore;
+	
+
+};
+
+struct myschedule {
+	
+	char grade[100];
+	char number[100];
+	char subname[100];
+	char proname[100];
+	char day[100];
+	char place[100];
+	int gradescore;
+	
+
+};
+
+struct myschedule my[50];
+struct student sts[50];
+
+void swap(struct student* a, struct student* b)
+{
+	struct student temp;
+	temp = *a;
+	*a = *b;
+	*b = temp;
+
+}
+
+
+
+int main(void)
+{
+
+	int i,j,k,m = 0;
+	char answer;
+	
+	printf("시간표 생성기를 시작합니다. \n");
+	printf("파일 불러오기 완료\n\n");
+	
+	FILE* fp = NULL;
+	
+	fp = fopen("classes.txt", "r");
+
+	while (!feof(fp))
+	{
+		
+		fscanf(fp,"%s %s %s %s %s %s %d\n", &sts[i].grade, &sts[i].number, &sts[i].subname, &sts[i].proname, &sts[i].day, &sts[i].place, &sts[i].gradescore);
+		i++;
+			
+	}
+
+	fclose(fp);
+	
+	
+	while (1)
+	{
+		printf("과목을 추가하시겠습니까? (y/n)");
+		scanf("%s", &answer);
+		
+		
+		if (answer == 'y')
+		{
+			printf("\n\n\n");
+			
+			
+			printf("과목 대상 학년을 입력하세요\n");
+			scanf("%s", &sts[i].grade);
+			printf("\n");
+			
+			printf("학수강좌번호를 입력하세요\n");
+			scanf("%s", &sts[i].number);
+			printf("\n");
+			
+			printf("교과목명 입력하세요\n");
+			scanf("%s", &sts[i].subname);
+			printf("\n");
+			
+			printf("교원명을 입력하세요\n");
+			scanf("%s", &sts[i].proname);
+			printf("\n");
+			
+			printf("요일/시간을 입력하세요\n");
+			scanf("%s", &sts[i].day);
+			printf("\n");
+			
+			
+			
+			printf("학점을 입력하세요\n");
+			scanf("%d", &sts[i].gradescore);
+			printf("\n");
+			
+			printf("과목을 추가하시겠습니까? (y/n)\n");
+			scanf("%s", &answer);
+			i++;
+			
+			if (answer == 'y')
+			{
+				
+				
+				for (j = 0l; j < i; j++)
+				{
+					printf("학년 : %s\n", sts[j].grade);
+			  		printf("학수강좌번호 : %s\n", sts[j].number);
+					printf("교과목명 : %s\n", sts[j].subname);
+					printf("교원명 : %s\n", sts[j].proname);
+					printf("요일/시간 : %s\n", sts[j].day);
+					printf("강의실 : %s\n", sts[j].place);
+					printf("학점 : %d \n\n\n", sts[j].gradescore);	
+				}
+			}
+			printf("내 시간표에 과목을 추가하시겠습니까? (y/n)");
+			scanf("%s\n\n\n", &answer);
+			if (answer == 'n')
+			{
+				break;
+			}
+			else if (answer == 'y')
+			{
+				scanf("%sts[j].grade", &my[0].grade);
+				printf("%s", my[0].grade);
+			}
+			
+		}
+			
+			
+		else if(answer == 'n')
+			{
+				break;
+			}
+			
+		else
+			{
+				printf("재대로 입력해 주십시오. \n");
+			}
+				
+    	
+ 	}
+ 	
+
+	return 0;
+}
