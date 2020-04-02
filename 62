@@ -1,1 +1,387 @@
-.
+대학교 시간표 만들기 (완성)
+
+
+# include <stdio.h>
+# include <string.h>
+
+
+struct student {
+	
+	char grade[100];
+	char number[100];
+	char subname[100];
+	char proname[100];
+	char day[100];
+	char place[100];
+	int gradescore;
+	
+
+};
+
+struct myschedule {
+	
+	char grade[100];
+	char number[100];
+	char subname[100];
+	char proname[100];
+	char day[100];
+	char place[100];
+	int gradescore;
+	
+
+};
+
+struct myschedule my[50];
+struct student sts[50];
+
+void swap(struct student *a, struct student *b)
+{
+	struct student temp;
+	temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void swap1(struct myschedule *a, struct myschedule *b)
+{
+	struct myschedule temp;
+	temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+
+void sortByClassName(int num)
+{
+	int x, y, j;
+	
+	for (x = 0; x < num; x++)
+	{
+	 	for (y = 0; y < num - x - 1; y++)
+		{
+	 		if (strcmp(sts[y].subname , sts[y+1].subname) > 0)
+	 		{
+	 			swap(&sts[y],&sts[y+1]);
+			}
+		}
+	}
+	for (j = 0; j < num; j++)
+	{
+	printf("학년 : %s\n", sts[j].grade);
+	printf("학수강좌번호 : %s\n", sts[j].number);
+	printf("교과목명 : %s\n", sts[j].subname);
+	printf("교원명 : %s\n", sts[j].proname);
+	printf("요일/시간 : %s\n", sts[j].day);
+	printf("강의실 : %s\n", sts[j].place);
+	printf("학점 : %d \n\n\n", sts[j].gradescore);	
+	} 
+}
+void sortByClassName1(int num)
+{
+	int x, y, j;
+	
+	for (x = 0; x < num; x++)
+	{
+	 	for (y = 0; y < num - x - 1; y++)
+		{
+	 		if (strcmp(my[y].subname , my[y+1].subname) > 0)
+	 		{
+	 			swap1(&my[y],&my[y+1]);
+			}
+		}
+	}
+	for (j = 0; j < num; j++)
+	{
+	printf("학년 : %s\n", my[j].grade);
+	printf("학수강좌번호 : %s\n", my[j].number);
+	printf("교과목명 : %s\n", my[j].subname);
+	printf("교원명 : %s\n", my[j].proname);
+	printf("요일/시간 : %s\n", my[j].day);
+	printf("강의실 : %s\n", my[j].place);
+	printf("학점 : %d \n\n\n", my[j].gradescore);	
+	} 
+}
+
+void sortByClassNumber(int num)
+{
+	int x, y, j;
+	
+	for (x = 0; x < num; x++)
+	{
+		for (y = 0; y < num - x - 1; y++)
+	 	{
+	 		if (strcmp(sts[y].number , sts[y+1].number) > 0)
+	 		{
+	 			swap(&sts[y], &sts[y+1]);
+			}
+		}
+	}
+	for (j = 0; j < num; j++)
+	{
+		printf("학년 : %s\n", sts[j].grade);
+		printf("학수강좌번호 : %s\n", sts[j].number);
+		printf("교과목명 : %s\n", sts[j].subname);
+		printf("교원명 : %s\n", sts[j].proname);
+		printf("요일/시간 : %s\n", sts[j].day);
+		printf("강의실 : %s\n", sts[j].place);
+		printf("학점 : %d \n\n\n", sts[j].gradescore);	
+	} 
+}
+void sortByClassNumber1(int num)
+{
+	int x, y, j;
+	
+	for (x = 0; x < num; x++)
+	{
+		for (y = 0; y < num - x - 1; y++)
+	 	{
+	 		if (strcmp(my[y].number , my[y+1].number) > 0)
+	 		{
+	 			swap1(&my[y], &my[y+1]);
+			}
+		}
+	}
+	for (j = 0; j < num; j++)
+	{
+		printf("학년 : %s\n", my[j].grade);
+		printf("학수강좌번호 : %s\n", my[j].number);
+		printf("교과목명 : %s\n", my[j].subname);
+		printf("교원명 : %s\n", my[j].proname);
+		printf("요일/시간 : %s\n", my[j].day);
+		printf("강의실 : %s\n", my[j].place);
+		printf("학점 : %d \n\n\n", my[j].gradescore);	
+	} 
+}
+
+void sortByProfessor(int num)
+{
+	int x, y, j;
+	
+	for (x = 0; x < num; x++)
+	{
+	 	for (y = 0; y < num - x - 1; y++)
+	 	{
+	 		if (strcmp(sts[y].proname , sts[y+1].proname) > 0)
+	 		{
+	 			swap(&sts[y],&sts[y+1]);
+			}
+		}
+	}
+	for (j = 0; j < num; j++)
+	{
+		printf("학년 : %s\n", sts[j].grade);
+		printf("학수강좌번호 : %s\n", sts[j].number);
+		printf("교과목명 : %s\n", sts[j].subname);
+		printf("교원명 : %s\n", sts[j].proname);
+		printf("요일/시간 : %s\n", sts[j].day);
+		printf("강의실 : %s\n", sts[j].place);
+		printf("학점 : %d \n\n\n", sts[j].gradescore);	
+	} 
+}
+void sortByProfessor1(int num)
+{
+	int x, y, j;
+	
+	for (x = 0; x < num; x++)
+	{
+	 	for (y = 0; y < num - x - 1; y++)
+	 	{
+	 		if (strcmp(my[y].proname , my[y+1].proname) > 0)
+	 		{
+	 			swap1(&my[y],&my[y+1]);
+			}
+		}
+	}
+	for (j = 0; j < num; j++)
+	{
+		printf("학년 : %s\n", my[j].grade);
+		printf("학수강좌번호 : %s\n", my[j].number);
+		printf("교과목명 : %s\n", my[j].subname);
+		printf("교원명 : %s\n", my[j].proname);
+		printf("요일/시간 : %s\n", my[j].day);
+		printf("강의실 : %s\n", my[j].place);
+		printf("학점 : %d \n\n\n", my[j].gradescore);	
+	} 
+}
+
+
+
+
+int main(void)
+{
+
+	int i,j,k,m,x,y = 0;
+	char answer;
+	char haksu[100];
+	
+	printf("시간표 생성기를 시작합니다. \n");
+	printf("파일 불러오기 완료\n\n");
+	
+	FILE* fp = NULL;
+	
+	fp = fopen("classes.txt", "r");
+
+	while (!feof(fp))
+	{
+		
+		fscanf(fp,"%s %s %s %s %s %s %d\n", &sts[i].grade, &sts[i].number, &sts[i].subname, &sts[i].proname, &sts[i].day, &sts[i].place, &sts[i].gradescore);
+		i++;
+			
+	}
+
+	fclose(fp);
+	
+	
+	while (1)
+	{
+		printf("과목을 추가하시겠습니까? (y/n)\n");
+		scanf("%s", &answer);
+		
+		if (answer == 'n')
+		{
+			break;
+		}	
+		
+		else if (answer == 'y')
+		{
+			printf("\n\n\n");
+			
+			printf("과목 대상 학년을 입력하세요\n");
+			scanf("%s", &sts[i].grade);
+			printf("\n");
+			
+			printf("학수강좌번호를 입력하세요\n");
+			scanf("%s", &sts[i].number);
+			printf("\n");
+			
+			printf("교과목명 입력하세요\n");
+			scanf("%s", &sts[i].subname);
+			printf("\n");
+			
+			printf("교원명을 입력하세요\n");
+			scanf("%s", &sts[i].proname);
+			printf("\n");
+			
+			printf("요일/시간을 입력하세요\n");
+			scanf("%s", &sts[i].day);
+			printf("\n");
+			
+			printf("강의실을 입력하세요\n");
+			scanf("%s", &sts[i].place);
+			printf("\n");
+			
+			printf("학점을 입력하세요\n");
+			scanf("%d", &sts[i].gradescore);
+			printf("\n");
+			
+			i++;	
+		}
+	
+		else
+		{
+			printf("재대로 입력해 주십시오. \n");
+		}	
+ 	}
+ 	for (j = 0; j < i; j++)
+	{
+		printf("학년 : %s\n", sts[j].grade);
+		printf("학수강좌번호 : %s\n", sts[j].number);
+		printf("교과목명 : %s\n", sts[j].subname);
+		printf("교원명 : %s\n", sts[j].proname);
+		printf("요일/시간 : %s\n", sts[j].day);
+		printf("강의실 : %s\n", sts[j].place);
+		printf("학점 : %d \n\n\n", sts[j].gradescore);	
+	} 
+ 	 
+ 	while (1)
+ 	{
+ 		printf("내 시간표에 과목을 추가하시겠습니까? (y/n)\n");
+ 		scanf("%s", &answer);
+ 		printf("\n\n\n");
+ 		if (answer == 'n')
+ 		{
+ 			break;	
+		}
+		else if(answer == 'y')
+		{
+			printf("학수번호를 입력하세요\n");
+			scanf("%s", &haksu);
+			printf("\n\n"); 
+			for (j = 0; j < i; j++)
+			{
+				if (strcmp(haksu, sts[j].number) == 0)
+				{
+					strcpy(my[k].grade, sts[j].grade);
+					strcpy(my[k].number, sts[j].number);
+					strcpy(my[k].subname, sts[j].subname);
+					strcpy(my[k].proname, sts[j].proname);
+					strcpy(my[k].day, sts[j].day);
+					strcpy(my[k].place, sts[j].place);
+					my[k].gradescore = sts[j].gradescore;
+					k++;
+					break;
+				}
+			}
+		}
+		else
+		{
+			printf("올바르게 입력해 주세요\n");
+		}
+	}
+	answer = 'y';
+	while (1)
+	{
+		printf("\n\n\n");
+		
+		if (answer == 'n')
+		{
+			break; 
+		}
+		else if(answer == 'y')
+		{
+			
+			printf("전체시간표보기(학수번호순)=1, 전체시간표보기(교수순)=2, 전체시간표보기(과목명순)=3\n");
+			printf("개인시간표보기(학수번호순)=4, 개인시간표보기(교수순)=5, 개인시간표보기(과목명순)=6\n");
+	 		scanf("%d", &m);
+	 		printf("\n\n\n");
+	 		if (m == 1)
+	 		{
+	 			printf("전체시간표보기(학수번호순)\n\n");
+	 			sortByClassNumber(i);
+			}
+			else if (m == 2)
+	 		{
+	 			printf("전체시간표보기(교수순)\n\n");
+	 			sortByProfessor(i);
+			}
+			else if (m == 3)
+	 		{
+	 			printf("전체시간표보기(과목명순)\n\n");
+	 			sortByClassName(i);
+			}
+			else if (m == 4)
+	 		{
+	 			printf("개인시간표보기(학수번호순)\n\n");
+	 			sortByClassNumber1(k);	
+			}
+			else if (m == 5)
+	 		{
+	 			printf("개인시간표보기(교수순)\n\n");
+	 			sortByProfessor1(k);
+			}
+			else if (m == 6)
+	 		{
+	 			printf("개인시간표보기(과목명순)\n\n");
+	 			sortByClassName1(k);
+			}
+		}
+		else
+		{
+			printf("올바르게 입력해주세요");	
+		}
+		printf("\n\n");
+		printf("계속하시겠습니까? (y/n)\n");
+		scanf("%s", &answer); 	
+	}
+	return 0;
+}
