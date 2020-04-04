@@ -1,1 +1,18 @@
+4. 다음 조화 수열의 처음부터 k번째 항까지 합산하는 함수를 작성하시오.
+함수 입력 : 합산할 항들의 개수를 나타내는 정수
+함수 출력 : 합산 결과 (실수)
 
+# include <stdio.h>
+
+int main(void)
+{
+	int i, x;
+	double sum = 0;
+	printf("합산할 항들의 개수를 쓰세요 : ");
+	scanf_s("%d", &x, sizeof(x));
+	for (i = 1; i <= x; i++)
+	{
+		sum += 1.0 / i;
+	}
+	printf("%f", sum);
+	return 0;
