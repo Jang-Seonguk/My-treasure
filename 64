@@ -1,1 +1,14 @@
+5. 어떤 한 실수를 정수로 바꾸면서 소수점 이하를 자르는 함수를 작성하시오.
+함수 입력 : 실수
+함수 출력 : 소수점 이하가 잘린 정수
 
+# include <stdio.h>
+
+int main(void)
+{
+	double x;
+	printf("숫자를 입력하세요 : ");
+	scanf_s("%lf", &x, sizeof(x));
+	printf("%d",(int) x);
+	return 0;
+}
