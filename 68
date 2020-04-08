@@ -1,1 +1,82 @@
+STACK
 
+# include <stdio.h>
+# include <stdbool.h>
+# define MAX_STACK_SIZE 5
+
+int stk[MAX_STACK_SIZE];
+int top = -1;
+
+int IsFull()
+{
+	if (top >= MAX_STACK_SIZE - 1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+int IsEmpty()
+{
+	if (top < 0)
+	{
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+
+void push(int x)
+{
+	if (IsFull() == true)
+	{
+		printf("스택이 가득 찼습니다.");
+	}
+	else
+	{
+		stk[++top] = x;
+	}
+}
+
+
+
+
+int pop()
+{
+	if (IsEmpty() == true)
+	{
+		printf("스택이 비었습니다.");
+	}
+	else
+	{
+		return stk[top--];
+	}
+}
+
+int main(void)
+{
+	int i;
+	push(1); 
+	push(3); 
+	push(4);
+	for (i = MAX_STACK_SIZE - 1; i >= 0; i--)
+	{
+		printf("%d\n", stk[i]);
+	}
+	printf("\n\n");
+	printf("pop() = %d ", pop());
+	printf("\n\n");
+	push(5);
+	for (i = MAX_STACK_SIZE - 1; i >= 0; i--)
+	{
+		printf("%d\n", stk[i]);
+	}
+	return 0;
+}
