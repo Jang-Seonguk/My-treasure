@@ -1,1 +1,111 @@
+C , data structure prefix
 
+
+
+
+# include <stdio.h>
+# include <ctype.h>
+# include <stdbool.h>
+
+# define SIZE 15
+
+int stk[SIZE];
+int top = -1;
+
+int isEmpty()
+{
+	if (top < 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+int isFull()
+{
+	if (top >= SIZE - 1)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+void push(char x)
+{
+	if (isFull == true)
+	{
+		printf("stack is full");
+	}
+	else
+	{
+		stk[++top] = (int) x;
+	}
+}
+
+int pop()
+{
+	if (isEmpty == true)
+	{
+		printf("stack is empty");
+	}
+	else
+	{
+		return stk[top--];
+	}
+	
+}
+
+int main(void)
+{
+	char a, b;
+	char inputs[] = "823*4-+2/";
+	int i = 0;
+	int x = 0;
+	int y = 0;
+	char token;
+	
+	while (inputs[i] != '\0')
+	{
+		token = inputs[i];
+		if (isdigit(token) != 0)
+		{
+			push(token - 48);
+		}
+		else if (token == '*')
+		{
+			y = pop();
+			x = pop();
+			
+			push(x * y);
+		}
+		else if (token == '/')
+		{
+			y = pop();
+			x = pop();
+			push(x / y);
+		}
+		else if (token == '+')
+		{
+			y = pop();
+			x = pop();
+			push(x + y);
+		}
+		else if (token == '-')
+		{
+			y = pop();
+			x = pop();
+			push(x - y);
+		}
+		
+		i++; 
+	}
+	
+	return 0;
+}
