@@ -56,7 +56,7 @@ void add(ArrayListType* L, int position, element item)
     }
 }
 //position : 삭제하고자 하는 위치
-//반환값 : 삭제되는 자료
+//반환값 : 삭제되는 자료 
 element _delete_(ArrayListType* L, int position)
 {
     int i;
