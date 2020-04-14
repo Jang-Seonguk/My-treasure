@@ -1,1 +1,185 @@
+Stack Maze
 
+
+#include <stdio.h>
+#include <ctype.h>
+#include <stdbool.h>
+#define EXIT_ROW 8
+#define EXIT_COL 14
+#define START_ROW 1
+#define START_COL 1
+
+#define MAX_STACK_SIZE 50
+
+int maze[40][40];
+
+ 
+int ROWS = 0;
+int COLS = 0;
+
+
+
+typedef struct _coord{
+ int x;
+ int y;
+}coord;
+
+//coord Stack[MAX_STACK_SIZE];
+
+int top = -1;   
+
+void Print(){
+ int i,j;
+ 
+
+ for(i=0; i<ROWS; i++){
+  for(j=0; j<COLS; j++){
+   if(maze[i][j]==1)   
+    printf("■" );
+   else if(maze[i][j]==2)  
+    printf("○");
+   else if(maze[i][j]==3)  
+    printf("◎");
+   else      
+    printf("  " );
+  }
+  printf("\n");
+ }
+ printf("\n\n");
+};
+
+int IsEmpty()
+{
+	if (top < 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void push(coord *stack, int row, int col){ 
+ top++;
+ stack[top].x = row;
+ stack[top].y = col;
+}
+
+coord pop(coord *stack){
+ int row;
+ int col;
+
+ row = stack[top].x;
+ col = stack[top].y;
+
+ return stack[top--];
+}
+
+void Check(coord *stack,int *row,int* col){
+ int i;
+ int j;
+ coord temp;
+ 
+ 
+
+ for(i=-1;i<2;i++)
+ {
+ 	
+ 	if(maze[*row][*col+i] == 0)
+   	{
+   		maze[*row][*col] = 3;    
+    	maze[*row][*col+i] = 3;
+    	
+    	*col=*col+i;
+    	push(stack, *row, *col);
+    	return ;	
+   	}
+   	else if(maze[*row+i][*col] == 0)
+   	{
+   		maze[*row][*col] = 3;    
+    	maze[*row+i][*col] = 3;
+    	
+    	*row=*row+i;
+    	push(stack, *row, *col);
+    	return ;
+   	}
+   	
+ }
+   
+ temp = pop(stack);
+ *row = temp.x;
+ *col = temp.y;
+ maze[*row][*col]=2;
+};
+
+int main(){ 
+ coord *stack;
+ coord val_stack[MAX_STACK_SIZE];
+ 
+ int *px;
+ int *py;
+ int x=START_ROW;
+ int y=START_COL;
+ int i,j;
+ int tmp = 0;
+
+
+ int cnt=75;
+ 
+ FILE* fp = NULL;
+ fp = fopen("maze.txt", "r");
+ 
+ while(!feof(fp))
+ {
+ 	tmp = fgetc(fp);
+ 	if (tmp == '\n')
+ 	{
+ 		ROWS++;
+ 		COLS = 0;
+	}
+	else if (tmp == '0' || tmp == '1')
+	{
+		maze[ROWS][COLS++] = tmp - 48;
+	}
+ }
+ ROWS++;  // ROWS는 0번 째 줄부터 시작하였으므로 1을 더해준다. 
+ 
+ 
+
+ stack = val_stack;
+
+ px=&x;
+ py=&y;
+ 
+ 
+ printf("\n\t현재 미로 \n\n");
+ Print();
+ printf("■ = 벽\n");
+ printf("○ = 지나갔던 길\n");
+ printf("◎ = Goal Route \n");
+ printf("\n\n\n");
+ 
+ while(1){
+  Check(stack,px,py);
+  
+  if( *px==(EXIT_ROW-1) && *py==(EXIT_COL-1))
+  {
+  	printf("\t Goal cell\n\n");
+  	Print();
+  	for (i = 0; i <= top; i++)
+  	{
+  		printf("(%d , %d)\n", stack[i].x, stack[i].y);
+	}
+  	break;
+  }
+  else if( IsEmpty())
+  {
+  	printf("\t No more place to go\n\n");
+  	Print();
+	break;
+  } 
+ }
+
+ return 0;
+}
