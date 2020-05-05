@@ -1,0 +1,57 @@
+          0. Read File
+
+from sklearn import *
+import pandas
+import numpy as np
+import csv
+
+# 1)
+a_list = []
+
+filename = 'csv_result-datasets-numeric-cpu.csv'
+data = pandas.read_csv(filename)
+a_list = data.values
+a_list = a_list.tolist()
+
+a_list
+
+
+        1. Label Encoding
+
+le = preprocessing.LabelEncoder()
+le.fit(data['vendor'])
+data['vendor'] = le.transform(data['vendor'])
+
+a_list_enc = data.values.tolist()
+a_list_enc
+
+       2. Normalize
+       
+X_train = np.array(a_list_enc)
+scaler = preprocessing.StandardScaler().fit(X_train)
+
+a_list_enc_norm = scaler.transform(X_train).tolist()
+a_list_enc_norm       
+
+      3. Divide_train_test
+      
+from sklearn.model_selection import train_test_split
+
+a_list_array = np.array(a_list_enc_norm)
+X_data = a_list_array[:,:-1]
+Y_data = a_list_array[:,-1]
+
+X_train, X_test, Y_train, Y_test = train_test_split(X_data, Y_data, test_size=0.3, random_state = 42)
+
+      4. Running Neural Network
+      
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import classification_report,confusion_matrix
+from sklearn import datasets
+
+clf = MLPClassifier(hidden_layer_sizes=(20,))
+clf.fit(X_train, Y_train)      
+      
+      
+      
