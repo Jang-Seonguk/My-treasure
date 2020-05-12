@@ -1,0 +1,133 @@
+링크드 리스트(Linked List) 구현
+
+# include <stdio.h>
+# include <stdlib.h>
+# include <conio.h>
+
+typedef struct __list
+{
+	struct __node* cur;
+	struct __node* head;
+	struct __node* tail;
+} linkedList;
+
+typedef struct __node
+{
+	int data;
+	struct __node* next;
+} node;
+
+
+
+void insertion(linkedList* L, int data)
+{
+	node* newNode = (node*)malloc(sizeof(node));
+	node* compareNode = (node*)malloc(sizeof(node));
+
+	newNode->data = data;
+	newNode->next = NULL;
+	compareNode = L->head;
+
+	if (L->head == NULL && L->tail == NULL)
+	{
+		L->head = L->tail = newNode;
+		return;
+	}
+	else if (L->head->data > newNode->data)
+	{
+		newNode->next = L->head;
+		L->head = newNode;
+		return;
+	}
+	else
+	{
+		
+		while (compareNode->next != NULL)
+		{
+			if (compareNode->next->data > newNode->data)
+			{
+				newNode->next = compareNode->next;
+				compareNode->next = newNode;
+				return;
+			}
+			compareNode = compareNode->next;
+		}
+	}
+	compareNode->next = newNode;
+	L->tail = newNode;
+
+
+
+}
+
+
+
+void delete(linkedList* L, int n)
+{
+	node* beforeNode = (node*)malloc(sizeof(node));
+	node* deleteNode = (node*)malloc(sizeof(node));
+	deleteNode = L->head;
+	beforeNode = L->head;
+	int i;
+	if (n == 0)
+	{
+		L->head = deleteNode->next;
+		free(deleteNode);
+		return;
+	}
+	else
+	{
+		for (i = 0; i < n; i++)
+		{
+			beforeNode = deleteNode;
+			deleteNode = deleteNode->next;
+		}
+		beforeNode->next = deleteNode->next;
+		if (deleteNode->next == NULL)
+		{
+			L->tail = beforeNode;
+		}
+		free(deleteNode);
+	}
+
+}
+
+
+void printNodes(linkedList* L)
+{
+	node* p = L->head;
+	putchar('[');
+	while (p != NULL)
+	{
+		printf("%d, ", p->data);
+		p = p->next;
+	}
+	putchar(']');
+	putchar('\n');
+}
+
+
+
+
+int main(void)
+{
+	
+	linkedList* L = (linkedList*)malloc(sizeof(linkedList));
+	L->cur = NULL;
+	L->head = NULL;
+	L->tail = NULL;
+	
+
+	
+	insertion(L, 2);
+	insertion(L, 1);
+	insertion(L, 3);
+	insertion(L, 4);
+	insertion(L, 5);
+	delete(L, 2);
+	delete(L, 3);
+	printNodes(L);
+	
+
+	return 0;
+}
