@@ -1,0 +1,178 @@
+1. 링크드 리스트(Linked List)를 이용한 Postfix
+
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <ctype.h>
+
+
+typedef struct __node
+{
+	int data;
+	struct __node* next;
+} node;
+
+
+typedef struct Stack
+{
+	node *top;
+}Stack;
+
+typedef struct Queue 
+{
+	node* front; 
+	node* rear; 
+	int count;
+}Queue;
+
+
+void InitStack(Stack* stack)
+{
+	stack->top == NULL;
+}
+
+void Push(Stack* stack, char data)
+{
+	node* now = (node*)malloc(sizeof(node));
+	now->data = data;
+	now->next = stack->top;
+	stack->top = now;   
+}
+
+int StackIsEmpty(Stack* stack)
+{
+	return stack->top == NULL;    
+}
+
+char Pop(Stack* stack)
+{
+	node* now;
+	char re;
+	if (StackIsEmpty(stack))
+	{
+		return 0;
+	}
+	now = stack->top;
+	re = now->data;
+
+	stack->top = now->next;
+	free(now);
+	return re;
+}
+
+void InitQueue(Queue* queue)
+{
+	queue->front = NULL; 
+	queue->rear = NULL;
+	queue->count = 0;
+}
+
+int QIsEmpty(Queue* queue)
+{
+	return queue->count == 0;   
+}
+
+void Enqueue(Queue* queue, char data)
+{
+	node* now = (node*)malloc(sizeof(node)); 
+	now->data = data;
+	now->next = NULL;
+
+	if (QIsEmpty(queue))
+	{
+		queue->front = now;     
+	}
+	else
+	{
+		queue->rear->next = now;
+	}
+	queue->rear = now; 
+	queue->count++;
+}
+
+int Dequeue(Queue* queue)
+{
+	int re = 0;
+	node* now;
+	if (QIsEmpty(queue))
+	{
+		return re;
+	}
+	now = queue->front;
+	re = now->data;
+	queue->front = now->next;
+	free(now);
+	queue->count--;
+	return re;
+}
+
+
+void conversion(Queue* Q, Stack* S)
+{
+	char x;
+	node* temp = Q->front;
+	
+	while (temp != NULL)
+	{
+		
+		if (temp->data == '*' || temp->data == '/')
+		{
+			Push(S, temp->data);
+		}
+		else if (temp->data == '+' || temp->data == '-')
+		{
+			if (StackIsEmpty(S))
+			{
+				Push(S, temp->data);
+			}
+			else if (S->top->data == '*' || S->top->data == '/')
+			{
+				printf("%c", Pop(S));
+				while (S->top != NULL)
+				{
+					printf("%c", Pop(S));
+				}
+				Push(S, temp->data);
+			}
+			else
+			{
+				Push(S, temp->data);
+			}	
+		}
+		else
+		{
+			printf("%c", temp->data);
+		}
+		temp = temp->next;
+	}
+	while (S->top != NULL)
+	{
+		printf("%c", Pop(S));
+	}
+}
+
+
+int main(void)
+{
+	Queue* Q = (Queue*)malloc(sizeof(Queue));
+	Stack* S = (Stack*)malloc(sizeof(Stack));
+	InitStack(S);
+	InitQueue(Q);
+	
+	
+	Enqueue(Q, 'a');
+	Enqueue(Q, '+');
+	Enqueue(Q, 'b');
+	Enqueue(Q, '*');
+	Enqueue(Q, 'c');
+	Enqueue(Q, '-');
+	Enqueue(Q, 'd');
+	Enqueue(Q, '/');
+	Enqueue(Q, 'e');
+	//a + b * c - d / e
+
+	conversion(Q, S);
+
+
+	return 0;
+}
