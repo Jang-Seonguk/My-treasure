@@ -1,0 +1,218 @@
+트리(Tree)를 이용한 Postorder, Preorder, Inorder, Levelorder
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+/// queue 관련 함수는 main함수 밑에 적어두었습니다.
+
+typedef struct tree* treeptr;
+typedef struct tree {
+    char data;
+    treeptr lchild, rchild;
+}tree;
+
+treeptr root = NULL;
+
+typedef struct __node
+{
+    int data;
+    struct __node* next;
+} node;
+
+typedef struct Queue
+{
+    node* front;
+    node* rear;
+    int count;
+}Queue;
+
+
+void Preorder(tree* sr)//전위 순위 운행
+{
+    if (sr)
+    {
+        printf("%c ", sr->data);
+        Preorder(sr->lchild);
+        Preorder(sr->rchild);
+    }
+}
+
+void Inorder(tree* sr)//중위 순위 운행
+{
+    if (sr)
+    {
+        Inorder(sr->lchild);
+        printf("%c ", sr->data);
+        Inorder(sr->rchild);
+    }
+}
+
+void Postorder(tree* sr)//후위 순위 운행
+{
+    if (sr)
+    {
+        Postorder(sr->lchild);
+        Postorder(sr->rchild);
+        printf("%c ", sr->data);
+    }
+}
+
+void level_order(tree* ptr);
+
+int main()
+{
+    treeptr newp = NULL;
+
+    root = (treeptr)malloc(sizeof(tree));
+    root->data = '/';
+    root->lchild = NULL;
+    root->rchild = NULL;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = '*';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->lchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = '+';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->rchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = '+';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->lchild->lchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = '-';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->lchild->rchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = 'e';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->rchild->lchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = 'f';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->rchild->rchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = 'a';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->lchild->lchild->lchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = 'b';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->lchild->lchild->rchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = 'c';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->lchild->rchild->lchild = newp;
+
+    newp = (treeptr)malloc(sizeof(tree));
+    newp->data = 'd';
+    newp->lchild = NULL;
+    newp->rchild = NULL;
+    root->lchild->rchild->rchild = newp;
+
+    printf("PreOrder Traversal : ");
+    Preorder(root);
+    printf("\n\nInOrder Traversal : ");
+    Inorder(root);
+    printf("\n\nPostOrder Traversal : ");
+    Postorder(root);
+    printf("\n\nLevelOrder Traversal : ");
+    level_order(root);
+
+    printf("\n");
+    return 0;
+}
+
+void InitQueue(Queue* queue)
+{
+    queue->front = NULL;
+    queue->rear = NULL;
+    queue->count = 0;
+}
+
+int QIsEmpty(Queue* queue)
+{
+    return queue->count == 0;
+}
+
+void Enqueue(Queue* queue, treeptr data)
+{
+    node* now = (node*)malloc(sizeof(node));
+    now->data = data;
+    now->next = NULL;
+
+    if (QIsEmpty(queue))
+    {
+        queue->front = now;
+    }
+    else
+    {
+        queue->rear->next = now;
+    }
+    queue->rear = now;
+    queue->count++;
+}
+
+int Dequeue(Queue* queue)
+{
+    int re = 0;
+    node* now;
+    if (QIsEmpty(queue))
+    {
+        return re;
+    }
+    now = queue->front;
+    re = now->data;
+    queue->front = now->next;
+    free(now);
+    queue->count--;
+    return re;
+}
+
+void level_order(tree* ptr)
+{
+    Queue* Q = (Queue*)malloc(sizeof(Queue));
+    
+    InitQueue(Q);
+
+    if (ptr == NULL)
+    {
+        return;
+    }
+    else
+    {
+        Enqueue(Q, ptr);
+        while (!QIsEmpty(Q))
+        {
+            ptr = Dequeue(Q);
+            printf("%c ", ptr->data);
+            if (ptr->lchild)
+            {
+                Enqueue(Q, ptr->lchild);
+            }
+            if (ptr->rchild)
+            {
+                Enqueue(Q, ptr->rchild);
+            }
+        }
+    }
+}
