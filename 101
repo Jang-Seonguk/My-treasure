@@ -1,1 +1,158 @@
+이진 탐색 트리 (BST)
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+typedef struct NodeStruct
+{
+    int value;
+    struct NodeStruct* leftChild;
+    struct NodeStruct* rightChild;
+}Node;
+
+Node* root = NULL;
+
+Node* BST_insert(Node* root, int value)
+{
+    if (IsEmpty(root) == true)
+    {
+        root = (Node*)malloc(sizeof(Node));
+        root->leftChild = root->rightChild = NULL;
+        root->value = value;
+        return root;
+    }
+    else
+    {
+        if (root->value > value)
+            root->leftChild = BST_insert(root->leftChild, value);
+        else
+            root->rightChild = BST_insert(root->rightChild, value);
+    }
+    return root;
+}
+Node* findMinNode(Node* root)
+{
+    Node* tmp = root;
+    while (tmp->leftChild != NULL)
+        tmp = tmp->leftChild;
+    return tmp;
+}
+Node* BST_delete(Node* root, int value)
+{
+    Node* tNode = NULL;
+    if (IsEmpty(root) == true)
+        return NULL;
+
+    if (root->value > value)
+        root->leftChild = BST_delete(root->leftChild, value);
+    else if (root->value < value)
+        root->rightChild = BST_delete(root->rightChild, value);
+    else
+    {
+        // 자식 노드가 둘 다 있을 경우
+        if (root->rightChild != NULL && root->leftChild != NULL)
+        {
+            tNode = findMinNode(root->rightChild);
+            root->value = tNode->value;
+            root->rightChild = BST_delete(root->rightChild, tNode->value);
+        }
+        else
+        {
+            tNode = (root->leftChild == NULL) ? root->rightChild : root->leftChild;
+            free(root);
+            return tNode;
+        }
+    }
+
+    return root;
+}
+Node* BST_search(Node* root, int value)
+{
+    if (IsEmpty(root) == true)
+        return NULL;
+
+    if (root->value == value)
+        return root;
+    else if (root->value > value)
+        return BST_search(root->leftChild, value);
+    else
+        return BST_search(root->rightChild, value);
+}
+void BST_print(Node* root)
+{
+    if (IsEmpty(root) == true)
+        return;
+
+    printf("%d ", root->value);
+    BST_print(root->leftChild);
+    BST_print(root->rightChild);
+}
+
+int IsEmpty(Node* root)
+{
+    if (root == NULL)
+        return true;
+}
+
+void Inorder(Node* root)
+{
+    if (root)
+    {
+        Inorder(root->leftChild);
+        printf("%d ", root->value);
+        Inorder(root->rightChild);
+    }
+}
+
+int main()
+{
+    int datalist[] = { 12, 9, 19, 3, 5, 22, 10, 2 };
+    int i, n = 8;
+    for (i = 0; i < n; i++)
+    {
+        root = BST_insert(root, datalist[i]);
+    }
+
+    printf("원본 : ");
+    Inorder(root);
+    printf("\n\n");
+
+    printf("3 삭제 : ");
+    BST_delete(root, 3);
+    Inorder(root);
+    printf("\n\n");
+
+    printf("9 삭제 : ");
+    BST_delete(root, 9);
+    Inorder(root);
+    printf("\n\n");
+
+    printf("12 삭제 : ");
+    BST_delete(root, 12);
+    Inorder(root);
+    printf("\n\n");
+
+    printf("3 삽입 : ");
+    BST_insert(root, 3);
+    Inorder(root);
+    printf("\n\n");
+
+    printf("11 삽입 : ");
+    BST_insert(root, 11);
+    Inorder(root);
+    printf("\n\n");
+
+    printf("23 삽입 : ");
+    BST_insert(root, 23);
+    Inorder(root);
+    printf("\n\n");
+
+    printf("3 삽입 : ");
+    BST_insert(root, 3);
+    Inorder(root);
+    printf("\n\n");
+
+
+    return 0;
+}
