@@ -1,1 +1,35 @@
+배열이 같은지 확인하는 프로그램
 
+# include <stdio.h>
+# define SIZE 5
+
+
+int array_equal(int a[], int b[], int size)
+{
+	int i;
+	for (i = 0; i < size; i++)
+	{
+		if (a[i] != b[i])
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+
+
+
+int main(void)
+{
+	int a[SIZE] = { 0 };
+	int b[SIZE] = { 0 };
+
+	printf("첫번째 배열을 입력하시오 : ");
+	scanf("%d %d %d %d %d", &a[0], &a[1], &a[2], &a[3], &a[4]);
+
+	printf("두번째 배열을 입력하시오 : ");
+	scanf("%d %d %d %d %d", &b[0], &b[1], &b[2], &b[3], &b[4]);
+
+	printf("%d", array_equal(a, b, SIZE));
+	return 0;
+}
