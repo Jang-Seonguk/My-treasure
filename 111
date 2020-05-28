@@ -1,0 +1,39 @@
+피보나치 수 20 번째까지 출력
+
+# include <stdio.h>
+
+// 피보나치 함수
+int Fibonacci(int number) 
+{
+	if (number == 0) 
+	{
+		return 0;
+	}
+	else if (number == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		return Fibonacci(number - 1) + Fibonacci(number - 2); // 피보나치 수열을 재귀함수로 구현 
+															  // 매개변수가 0, 1이 아니라면 매개변수의 - 1, -2 한값을 리턴
+		                                                          
+	}
+}
+
+
+
+
+
+int main(void)
+{
+	int i;
+
+	//20번 째까지의 피보나치 수 출력
+	for (i = 0; i <= 20; i++) 
+	{
+		printf("%d번째 피보나치 수 : %d\n", i, Fibonacci(i));
+	}
+	return 0;
+}
+
