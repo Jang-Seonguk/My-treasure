@@ -1,0 +1,165 @@
+10명의 학생의 성적을 출력
+
+# include <stdio.h>
+# include <time.h>
+
+//배열의 앞 뒤를 바꿔주는 함수
+void Swap(int arr[][2], int index)  // 2차원 배열과 index를 매개변수로 받음
+{
+	// arr[index][0] <--> arr[index + 1][0]   
+	int temp = arr[index][0];
+	arr[index][0] = arr[index + 1][0];
+	arr[index + 1][0] = temp;
+
+
+	// arr[index][1] <--> arr[index + 1][1] 
+	temp = arr[index][1];
+	arr[index][1] = arr[index + 1][1];
+	arr[index + 1][1] = temp;
+
+}
+
+
+int main(void)
+{
+	int i, j;
+	int temp = 0;  // 값을 swap할 때 사용하는 변수
+
+	srand((unsigned)time(NULL)); 
+
+	int MidExam[10][2];    // 중간고사 성적이 담긴 2차원 배열 (중간1 , 중간2)
+	int FinalExam[10][2];  // 기말고사 성적이 담긴 2차원 배열 (기말1 , 기말2)
+	int Avg[10];           // 학생의 평균성적이 담긴 배열 
+
+	int min, max, sum = 0;  // 각 시험의 최소 점수, 최대 점수, 평균을 구하기 위한 변수
+
+
+
+	// 10명의 학생의 중간고사, 기말고사, 평균을 생성함
+	for (i = 0; i < 10; i++)
+	{
+		// 성적은 0 ~ 100 값으로 랜덤하게 생성함
+		MidExam[i][0] = rand() % 101;           // 중간고사 1
+		MidExam[i][1] = rand() % 101;           // 중간고사 2
+		FinalExam[i][0] = rand() % 101;         // 기말고사 1
+		FinalExam[i][1] = rand() % 101;         // 기말고사 2
+
+		Avg[i] = (MidExam[i][0] + MidExam[i][1] + FinalExam[i][0] + FinalExam[i][1]) / 4;  // 중간, 기말고사 성적을 다 더하고 4로 나눈값인 평균을 Avg배열에 넣음 
+	}
+
+
+
+	// 평균이 담긴 배열 Avg를 큰 순서대로 다시 정렬함
+	for (i = 0; i < 10; i++)
+	{
+		for (j = 0; j < 9 - i; j++)
+		{
+			if (Avg[j] < Avg[j + 1])  // j번째보다 j+1번째 평균이 더 크다면 서로 중간, 기말고사, 평균 성적을 바꿈
+			{
+				//Swap 함수 이용
+				Swap(MidExam, j);  // == MidExam[j][0] <--> MidExam[j+1][0]  and  MidExam[j][1] <--> MidExam[j+1][1]
+				Swap(FinalExam, j);
+
+
+				//temp 변수를 이용하여 Avg[j], Avg[j+1] 값을 서로 바꿈
+				temp = Avg[j];
+				Avg[j] = Avg[j + 1];
+				Avg[j + 1] = temp;
+			}
+		}
+	}
+
+	//학생의 성적을 출력
+	printf("\t중간 1\t중간 2\t기말 1\t기말 2\t평균\n");
+
+	for (i = 0; i < 10; i++)
+	{
+		printf("%d\t %d\t %d\t %d\t %d\t %d\n", i + 1, MidExam[i][0], MidExam[i][1], FinalExam[i][0], FinalExam[i][1], Avg[i]);
+	}
+
+
+	// 중간 1의 최소, 최대, 평균점수 구하기
+	min = max = MidExam[0][0];   // 최소, 최대점수를 첫 번째 학생 점수로 정한다.
+	for (i = 0; i < 10; i++)
+	{
+		sum += MidExam[i][0];    // 평균을 구하기 위해 계속 더해줌
+
+		if (min > MidExam[i][0])  // 비교값이 min보다 작으면 min에 그 값을 넣어줌
+		{
+			min = MidExam[i][0];
+		}
+
+		if (max < MidExam[i][0])  // 비교값이 max보다 크면 max에 그 값을 넣어줌
+		{
+			max = MidExam[i][0];
+		}
+
+	}
+	printf("\n중간1  \t최대 점수 : %d점    최저 점수 : %d점\t평균 : %d점\n", max, min, sum / 10);
+
+
+	// 중간 2의 최소, 최대, 평균점수 구하기
+	min = max = MidExam[0][1];
+	sum = 0;                     // sum은 위 for문에서 썼으므로 0으로 초기화를 시켜준다.
+	for (i = 0; i < 10; i++)
+	{
+		sum += MidExam[i][1];
+
+		if (min > MidExam[i][1])
+		{
+			min = MidExam[i][1];
+		}
+
+		if (max < MidExam[i][1])
+		{
+			max = MidExam[i][1];
+		}
+
+	}
+	printf("\n중간2  \t최대 점수 : %d점    최저 점수 : %d점\t평균 : %d점\n", max, min, sum / 10);
+
+
+	// 기말1 의 최소, 최대, 평균점수 구하기
+	min = max = FinalExam[0][0];
+	sum = 0;
+	for (i = 0; i < 10; i++)
+	{
+		sum += FinalExam[i][0];
+
+		if (min > FinalExam[i][0])
+		{
+			min = FinalExam[i][0];
+		}
+
+		if (max < FinalExam[i][0])
+		{
+			max = FinalExam[i][0];
+		}
+
+	}
+	printf("\n기말1  \t최대 점수 : %d점    최저 점수 : %d점\t평균 : %d점\n", max, min, sum / 10);
+
+
+	// 기말2 의 최소, 최대, 평균점수 구하기
+	min = max = FinalExam[0][1];
+	sum = 0;
+	for (i = 0; i < 10; i++)
+	{
+		sum += FinalExam[i][1];
+
+		if (min > FinalExam[i][1])
+		{
+			min = FinalExam[i][1];
+		}
+
+		if (max < FinalExam[i][1])
+		{
+			max = FinalExam[i][1];
+		}
+
+	}
+	printf("\n기말2  \t최대 점수 : %d점    최저 점수 : %d점\t평균 : %d점\n", max, min, sum / 10);
+
+
+	return 0;
+}
