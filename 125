@@ -1,1 +1,34 @@
+# include <stdio.h>
+# include <stdlib.h>
 
+void set_proverb(char** q, int n)
+{
+	static char* array[10] = { "A bad shearer never had a good sickle." ,
+	"A bad workman always blames his tools.",
+	"A bad workman quarrels with his tools.",
+	"A bad thing never dies.",
+	"A barking dog never bites.",
+	"A good medicine tastes bitter.",
+	"A burnt child dreads the fire.",
+	"No pain No gain.",
+	"Walls have ears.",
+	"Do not count your chickens before they hatch." };
+
+	*q = array[n];
+}
+
+
+
+int main(void)
+{
+	int i;
+	char* s;
+	
+	printf("몇 번째 속담을 선택하시겠습니까? ");
+	scanf_s("%d", &i, sizeof(i));
+
+	set_proverb(&s, i);
+
+	printf("selected proverb = %s\n", s);
+	return 0;
+}
