@@ -1,0 +1,69 @@
+배열 관련 예제
+
+# include <stdio.h>
+
+
+void array_print(char* name, int* a, int size)
+{
+	int i;
+	printf("%c[] = ",name);
+	for (i = 0; i < size; i++)
+	{
+		printf("%d ", a[i]);
+	}
+	printf("\n");
+}
+
+void array_add(int a[], int b[], int c[], int size)
+{
+	int i;
+	for (i = 0; i < size; i++)
+	{
+		c[i] = a[i] + b[i];
+	}
+}
+
+
+
+int main(void)
+{
+	int A[10] = { 1,2,3 };
+	int B[10] = { 0 };
+	int C[10] = { 0 };
+
+	array_add(A, B, C, 10);
+
+	array_print('A', A, 10);
+	array_print('B', B, 10);
+	array_print('C', C, 10);
+}
+
+
+
+
+--------------------------------------------------------------
+
+# include <stdio.h>
+
+
+int main(void)
+{
+	int data[10] = { 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 };
+
+	int index = search(data, 10, 200);
+
+	printf("월급이 200만원인 사람의 인덱스 = %d\n", index);
+
+}
+
+int search(int* A, int size, int x)
+{
+	int i;
+	for (i = 0; i < size; i++)
+	{
+		if (A[i] == x)
+		{
+			return i;
+		}
+	}
+}
