@@ -1,0 +1,102 @@
+MST - sollin
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define N 8	
+#define M 1000	
+#define Z(i) (int)pow(2,i)
+
+const int W[N][N] = {
+	{0,2,8,M,M,M,M,M},
+	{2,0,7,9,M,M,M,M},
+	{8,7,0,4,10,12,M,M},
+	{M,9,4,0,M,M,M,M},
+	{M,M,10,M,0,6,14,M},
+	{M,M,12,M,6,0,M,M},
+	{M,M,M,M,14,M,0,3},
+	{M,M,M,M,M,M,3,0}
+};
+// 연결이 안된곳은 M으로 , 자기 자신은 0으로 표시
+
+int P[N];
+
+void sollin();
+
+void main()
+{
+	sollin();
+}
+
+void sollin()
+{
+	
+	int i, j, v, min, s;
+	int A[N], vnear[N], distance[N];
+	for (i = 0; i < N; i++)
+	{
+		distance[i] = M;
+		for (j = 0; j < N; j++)
+			if (i != j && distance[i] > W[i][j])
+			{
+				vnear[i] = j;
+				distance[i] = W[i][j];
+			}
+	}
+	for (i = 0; i < N; i++)
+		A[i] = Z(i);
+	while (A[0] != Z(N) - 1)
+	{
+		for (i = 0; i < N; i++)
+		{
+			v = vnear[i];
+			if (i < v && i == vnear[v])
+			{
+				printf("\n\nvnear\n");
+				for (j = 0; j < N; j++)
+					printf("%d ", vnear[j]+1);
+				printf("\n\nA[]\n");
+				for (j = 0; j < N; j++)
+				{
+					for (s = 0; s < N; s++)
+					{
+						if ((A[j] & Z(s)) == 0)continue;
+						printf("%d", s+1);
+					}
+					printf(" ");
+				}
+				A[i] |= A[v];
+				P[v] = i;
+
+				for (s = 0; s < N; s++)
+				{
+					if ((A[i] & Z(s)) == 0)continue;
+					A[s] = A[i];
+
+					min = M;
+					for (j = 0; j < N; j++)
+						if ((A[i] & Z(j)) == 0 && min > W[s][j])
+						{
+							min = W[s][j];
+							vnear[s] = j;
+						}
+				}
+			}
+		}
+		
+	}
+	printf("\n\nvnear\n");
+	for (j = 0; j < N; j++)
+		printf("%d ", vnear[j]+1);
+	printf("\n\nA[]\n");
+	for (j = 0; j < N; j++)
+	{
+		for (s = 0; s < N; s++)
+		{
+			if ((A[j] & Z(s)) == 0)continue;
+			printf("%d", s+1);
+		}
+		printf(" ");
+	}
+}
