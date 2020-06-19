@@ -1,0 +1,32 @@
+구조체 예제 2
+
+# include <stdio.h>
+
+struct complex 
+{
+	double real;
+	double imag;
+};
+
+struct complex add(struct complex c1, struct complex c2)
+{
+	struct complex c;
+	c.real = c1.real + c2.real;
+	c.imag = c1.imag + c2.imag;
+	return c;
+}
+
+int main(void)
+{
+	struct complex a = { 1.0, 2.0 };
+	struct complex b = { 2.0, 3.0 };
+	struct complex answer = { 0, };
+
+	answer = add(a, b);
+
+	printf("%f + %fi\n", a.real, a.imag);
+	printf("%f + %fi\n", b.real, b.imag);
+	printf("%f + %fi", answer.real, answer.imag);
+
+	return 0;
+}
