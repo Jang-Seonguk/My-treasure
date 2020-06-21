@@ -1,0 +1,43 @@
+구조체 예제 4
+
+# include <stdio.h>
+
+struct point
+{
+	int x, y;
+};
+
+struct circle
+{
+	struct point center;
+	double radius;
+};
+
+double area(struct circle c)
+{
+	return (3.14 * c.radius * c.radius);
+}
+
+double perimeter(struct circle c)
+{
+	return (2 * 3.14 * c.radius);
+}
+
+
+
+int main(void)
+{
+	struct circle c;
+
+	printf("원의 중심점 : ");
+	scanf_s("%d %d", &c.center.x, &c.center.y, sizeof(c.center.x), sizeof(c.center.y));
+
+	printf("원의 반지름 : ");
+	scanf_s("%lf", &c.radius, sizeof(c.radius));
+
+	printf("원의 면적 = %f    원의 둘레 = %f", area(c), perimeter(c));
+
+
+
+	return 0;
+}
