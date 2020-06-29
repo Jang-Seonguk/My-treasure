@@ -1,0 +1,12 @@
+완주하지 못한 선수
+
+
+def solution(participant, completion):
+    if set(participant) != set(completion):
+        list_a = list(set(participant) - set(completion))
+        return list_a[0]
+    
+    else:
+        for i in completion:
+            if participant.count(i) - completion.count(i) == 1:
+                return i
