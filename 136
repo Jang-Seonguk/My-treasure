@@ -1,1 +1,12 @@
+프로그래머스 연습 문제 : 수박수박수박
 
+def solution(n): 
+    
+    a = ''
+    for i in range(n):
+        a += "수박"
+    
+    answer = a[:len(a) // 2]
+    
+    
+    return answer
