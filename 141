@@ -10,3 +10,4 @@ def solution(participant, completion):
         for i in completion:
             if participant.count(i) - completion.count(i) == 1:
                 return i
+ 
