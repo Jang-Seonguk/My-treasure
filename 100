@@ -1,4 +1,6 @@
-프로그래머스 연습문제 : K번 째 수
+프로그래머스 연습문제 Level 1 
+ 
+   -K번 째 수
 
 def solution(array, commands):
 
