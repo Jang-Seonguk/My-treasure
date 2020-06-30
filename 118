@@ -1,1 +1,8 @@
+프로그래머스 연습 문제 : 서울에서 김서방 찾기
+
+def solution(seoul): 
+    n = seoul.index('Kim')
+    
+    answer = "김서방은 {}에 있다".format(n)
+    return answer
 
