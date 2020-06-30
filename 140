@@ -1,1 +1,20 @@
+프로그래머스 연습 문제 : 시저 암호
 
+def solution(s, n): 
+    answer = ''
+    x = 0
+    a = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+    
+    for i in s:
+        if i.islower():
+            x = a.index(i)
+            answer += a[(x+n)%26]
+            
+        elif i.isupper():
+            x = a.index(i.lower())
+            answer += a[(x+n)%26].upper()
+            
+        else: 
+            answer += i
+             
+    return answer
