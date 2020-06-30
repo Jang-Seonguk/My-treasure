@@ -24,4 +24,4 @@ def solution(answers):
         if answer_list[i] == max_num:
             answer.append(i+1)
          
-    return answer
+    return answer 
