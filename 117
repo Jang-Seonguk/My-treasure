@@ -1,1 +1,6 @@
+프로그래머스 연습 문제 : 문자열 내림차순으로 배치하기
 
+def solution(s):
+    s = sorted(s, reverse = True)
+    answer = ''.join(s)
+    return answer
