@@ -1,1 +1,13 @@
+프로그래머스 연습문제 : K번 째 수
 
+def solution(array, commands):
+
+    answer = []
+    
+    for i in range(3):
+    
+        a = array[commands[i][0] - 1 : commands[i][1]]
+        answer.append(sorted(a)[commands[i][2]-1])
+    
+    
+    return answer
