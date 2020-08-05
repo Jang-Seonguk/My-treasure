@@ -37,4 +37,4 @@ def solution(scoville, K):
             count += 1
         else:
             break
-    return count
+    return count 
