@@ -33,4 +33,4 @@ def solution(numbers):
                 a[int(j)] = False
                 answer += 1
         
-    return answer
+    return answer 
