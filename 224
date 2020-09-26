@@ -16,3 +16,15 @@ A에서 세번째 숫자인 2, B에서 첫번째 숫자인 4를 뽑아 곱하여
 제한사항
 배열 A, B의 크기 : 1,000 이하의 자연수
 배열 A, B의 원소의 크기 : 1,000 이하의 자연수
+
+from itertools import combinations 
+def solution(A,B):
+    answer = []
+    length = len(A)
+    A.sort()
+    B.sort(reverse = True)
+    for i in range(length):
+        answer.append(A[i]*B[i])
+    
+    
+    return sum(answer)
