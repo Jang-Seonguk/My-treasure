@@ -1,0 +1,11 @@
+신호와 시스템
+
+Time-Invariant 한 시스템 ㅏㅊㅈ기
+
+y(t) = sin(x(t))  -> y(t-t0) = sin(x(t-t0)) == T{x(t-t0)} = sin(x(t-t0)) 이므로 Time-Invariant 하다
+
+y(t) = t*x(t) + 4 -> y(t-t0) = (t-t0)x(t-t0)+4 != T{x(t-t0)} = tx(t-t0)+4 이므로 Time-Invariant 하지 않다
+
+y(t) = integral(0~t) x(t) -> y(t-t0) = integral(0~t-t0) x(t) != T{x(t-t0)} = integral(0~t) x(t-t0) 이므로 Time-Invariant 하지 않다
+
+y(t) = x(2t) -> y(t-t0) = x(2(t-t0)) != T{x(t-t0)} = x(2t-t0) 이므로 Time-Invariant 하지 않다.  
