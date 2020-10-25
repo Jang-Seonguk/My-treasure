@@ -1,0 +1,63 @@
+public class Barlog extends Character {
+
+	
+	void initialize() {
+		super.hitPoint = 170;
+		super.portionNumber = 5; 
+	}
+	
+	
+	void attack(Character c) {
+		
+		
+		for (int i = 0; i < 2; i++) {
+			if (Math.random() < 0.2) {
+				c.hitPoint -= 35;
+				System.out.print("Barlog attacks with damage 35. ");
+			}
+			else {
+				c.hitPoint -= 25;
+				System.out.print("Barlog attacks with damage 25. ");
+			}
+			
+			if (c.hitPoint <= 0) {
+				c.hitPoint = 0;
+				System.out.println(c.getClass().getName() +" has " + c.hitPoint + " hit point now.");
+				break;
+				
+			}
+			System.out.println(c.getClass().getName() +" has " + c.hitPoint + " hit point now.");
+			c.recover();
+			
+			
+		}
+	};
+	
+	int getDamage(int damage) {
+		super.hitPoint -= damage;
+		recover();
+		return super.hitPoint;
+	};
+		
+	void recover() {
+		for (int i = 0; i < 2; i ++) {
+			if (needPortion() == true) {
+				super.hitPoint += 30;
+				super.portionNumber -= 1;
+				System.out.println("Barlog eats portion and " + super.hitPoint + " hit point now.");
+			}
+		}
+	};
+	
+	boolean needPortion() {
+		if (super.hitPoint > 0 && super.hitPoint <= 140 && super.portionNumber > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	void whoAmI() {
+		System.out.println("I am a Barlog!!");
+	};
