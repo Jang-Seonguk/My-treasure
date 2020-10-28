@@ -1,0 +1,50 @@
+public class Human extends Character{
+
+	
+	
+	void initialize() {
+		super.hitPoint = 200;
+		super.portionNumber = 5; 
+	}
+	
+	
+	void attack(Character c) {
+		c.hitPoint -= 50;
+		if (c.hitPoint <= 0) {
+			c.hitPoint = 0;
+		}
+		System.out.print("Human attacks with damage 50. ");
+		System.out.println(c.getClass().getName() +" has " + c.hitPoint + " hit point now.");
+		c.recover();
+	};
+	
+	int getDamage(int damage) {
+		super.hitPoint -= damage;
+		recover();
+		return super.hitPoint;
+	};
+		
+	void recover() {
+		if (needPortion() == true) {
+			
+			super.hitPoint += 40;
+			super.portionNumber -= 1;
+			
+			System.out.println("Human eats portion and " + super.hitPoint + " hit point now.");
+		}
+	};
+	
+	boolean needPortion() {
+		if (super.hitPoint > 0 && super.hitPoint <= 160 && super.portionNumber > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	void whoAmI() {
+		System.out.println("I am a Human!!");
+	};
+
+}
