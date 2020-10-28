@@ -1,0 +1,61 @@
+public class Elf extends Character{
+	
+	
+	void initialize() {
+		super.hitPoint = 180;
+		super.portionNumber = 5; 
+	}
+	
+	
+	void attack(Character c) {
+		
+		if (Math.random() < 0.3) {
+			c.hitPoint -= 70;
+			System.out.print("Elf attacks with damage 70. ");
+		} 
+		else {
+			c.hitPoint -= 35;
+			System.out.print("Elf attacks with damage 35. ");
+		}
+		if (c.hitPoint <= 0) {
+			c.hitPoint = 0;
+		}
+		System.out.println(c.getClass().getName() +" has " + c.hitPoint + " hit point now.");
+		c.recover();
+	};
+	
+	int getDamage(int damage) {
+		super.hitPoint -= damage;
+		recover();
+		return super.hitPoint;
+	};
+		
+	void recover() {
+
+		if (needPortion() == true) {
+			if (Math.random() < 0.25) {
+				super.hitPoint += 60;
+				super.portionNumber -= 1;
+			}
+			else {
+				super.hitPoint += 30;
+				super.portionNumber -= 1;	
+			}
+			System.out.println("Elf eats portion and " + super.hitPoint + " hit point now.");
+		}
+	};
+	
+	boolean needPortion() {
+		if (super.hitPoint > 0 && super.hitPoint <= 120 && super.portionNumber > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	void whoAmI() {
+		System.out.println("I am a Elf!!");
+	};
+
+}
