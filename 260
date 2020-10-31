@@ -1,0 +1,67 @@
+import java.util.Arrays;
+import java.util.Collections;
+
+
+public class Game {
+	
+	public Character firstWinner;
+	public Character secondWinner;
+	public Character finalWinner;
+	
+	public Character battle(Character blue, Character red) {
+		blue.initialize();
+		red.initialize();
+		while (true) {
+			blue.attack(red);
+			
+			if (red.isDie()) {
+				System.out.println(red.getClass().getCanonicalName() + " is dead.");
+				return blue;
+			}
+			
+			red.attack(blue);
+			
+			if (blue.isDie()) {
+				System.out.println(blue.getClass().getCanonicalName() + " is dead.");
+				return red;
+			}
+		}	
+	}
+	
+	
+	public void tournament(Character hu, Character cyber, Character bar, Character el) {
+		Character[] participant = {hu, cyber, bar, el};
+		
+		Collections.shuffle(Arrays.asList(participant)); // Character 변수 랜덤으로 섞어줌
+		
+		System.out.println(participant[0].getClass().getName() + " VS " + participant[1].getClass().getName() + "\n");
+		firstWinner = battle(participant[0], participant[1]);
+		System.out.println("\n----------The Winner of the First Match : " + firstWinner.getClass().getName() + "\n\n");
+		
+		
+		System.out.println(participant[2].getClass().getName() + " VS " + participant[3].getClass().getName() + "\n");
+		secondWinner = battle(participant[2], participant[3]);
+		System.out.println("\n----------The Winner of the Second Match : " + secondWinner.getClass().getName() + "\n\n");
+
+		
+		System.out.println(firstWinner.getClass().getName() + " VS " + secondWinner.getClass().getName() + "\n");
+		finalWinner = battle(firstWinner, secondWinner);
+		System.out.println("\n----------The Winner of the Final Match : " + finalWinner.getClass().getName() + "\n\n");
+		
+		finalWinner.whoAmI();
+	}
+	
+	public static void main(String args[]) {
+		Character hu = new Human();
+		Character cyber = new CyberDaemon();
+		Character bar = new Barlog();
+		Character el = new Elf();
+		Game g1 = new Game();
+		
+		g1.tournament(hu, cyber, bar, el);
+		
+	}
+	
+	
+	
+}
