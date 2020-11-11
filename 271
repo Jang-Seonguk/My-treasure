@@ -1,0 +1,139 @@
+시뮬레이터의 구조는 다음과 같다. 시뮬레이션의 main 함수는 TOP에 있으며 송신부(TX)에
+서 변조를 하여 전송하며 전송된 신호는 채널(CH)를 거쳐 수신부(RX)로 입력된다. 채널에서
+는 주어진 SNR에 따라서 잡음을 삽입한다. 
+
+시뮬레이터는 다음과 같은 Directory로 구성된다.
+Basic   Simulation Simulator
+Common   Common and library files
+Data Input   and output data
+Common에 있는 파일들은 대부분 library 들이므로 특별한 신경을 쓰지 않아도 무방하다.
+
+
+
+시뮬레이터에서는 다음과 같은 복소수 type을 사용한다.
+// Complex double
+typedef struct {
+ double i; // In-phase data
+ double q; // Quadrature data
+} ComplexDouble; 
+
+
+시뮬레이터에서 사용하는 주요 constant는 다음과 같다. 이 constant들은 GLOBAL.H에 정
+의되어 있다. 
+// Modulation
+#define BPSK 1
+#define QPSK 2
+#define QAM16 4
+// Channel
+#define IDEAL_CHANNEL 0
+#define AWGN_CHANNEL 1
+#define FADING_CHANNEL 2 
+
+
+시뮬레이터에서 사용하는 전역 변수는 파라미터와 데이터가 있다.
+
+TOP_ParamType TOP_param;
+TOP_DataType TOP_data;
+TOP_param는 시뮬레이션을 위한 변수이며 다음과 같은 타입을 가진다.
+
+// SNR
+typedef struct {
+ int min; // Minimum of SNR
+ int max; // Maximum of SNR
+ int step; // Step size
+ int dB; // SNR in dB scale
+ double linear; // SNR in linear scale
+} TOP_SnrParamType;
+
+// Parameters
+typedef struct {
+ int numSimulation; // # of simulation iterations
+ int modulation; // Modulation order
+ int sourceLength; // Source data length
+ int frameLength; // Frame length
+ TOP_SnrParamType snr; // SNR-related parameters
+} TOP_ParamType;
+
+시뮬레이터에서 사용하는 데이터 변수는 다음과 같은 type을 가진다. 
+
+// Data
+typedef struct {
+ int bitErrorCount; // Bit Error Count
+ int frameErrorCount; // Frame Error Count
+ int source[TOP_MAX_LENGTH]; // Source data
+ int decision[TOP_MAX_LENGTH]; // Decision
+ ComplexDouble frame[TOP_MAX_LENGTH]; // Frame
+} TOP_DataType;
+
+이 외에도 채널과 관련된 전역변수를 이용한다. 채널에 대해서는 이해하지 않아도 시뮬레
+이터를 이해하는데 큰 지장이 없다.
+CH_ParamType CH_param; // Channel parameter
+
+시뮬레이터의 골격은 다음과 같다. main()은 top.c에 있다.
+void main()
+{
+ int snr,i;
+ Initialize(); // Initialize program
+ for (snr = TOP_param.snr.min; snr <= TOP_param.snr.max; snr += TOP_param.snr.step) {
+ InitializeSimulation(snr); // Initialize simulation parameters
+ for (i = 0; i < TOP_param.numSimulation; i++) {
+ GenerateSourceData(); // Source data
+ TX_Transmitter(); // Transmission
+ CH_Channel(); // Channel
+ RX_Receiver(); // Reception
+ CountError(); // Count bit errors & packet errors
+ }
+ ConcludeSimulation(); // Calculate BER, FER
+ }
+ Conclude(); // Conclude program
+}
+
+
+GenerateSourceData()의 기본 형태는 다음과 같다.
+void GenerateSourceData()
+{ 
+ int i;
+ // Generate random binary data
+ for (i = 0; i < TOP_param.sourceLength; i++) {
+ TOP_data.source[i] = rand() % 2;
+ }
+}
+TX_Transmitter()의 기본 형태는 다음과 같다.
+void TX_Transmitter()
+{
+ switch (TOP_param.modulation) {
+ case BPSK: TransmitBPSK(); break;
+ case QPSK: TransmitQPSK(); break;
+ case QAM16: Transmit16QAM(); break;
+ default: DEBUG_ERROR("Illegal Modulation Type");
+ }
+}
+
+
+RX_Receiver()의 기본 형태는 다음과 같다.
+void RX_Receiver()
+{
+ switch (TOP_param.modulation) {
+ case BPSK: ReceiveBPSK(); break;
+ case QPSK: ReceiveQPSK(); break;
+ case QAM16: Receive16QAM(); break;
+ default: DEBUG_ERROR("Illegal Modulation Type");
+ }
+} 
+
+CounterError()의 기본 형태는 다음과 같다.
+void CountError()
+{
+ int bitError = 0;
+ int frameError = 0;
+ int i;
+// Bit Error Count
+ for (i = 0; i < TOP_param.sourceLength; i++) { 
+ if (TOP_data.decision[i] != TOP_data.source[i]) {
+ bitError++;
+ frameError = 1;
+ }
+ }
+ TOP_data.bitErrorCount += bitError;
+ TOP_data.frameErrorCount += frameError;
+} 
