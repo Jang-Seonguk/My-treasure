@@ -1,0 +1,44 @@
+Bandpass Modulation
+
+Amplitude Shift Keying (ASK) , Phase Shift Keying (PSK) , Frequency Shift Keying (FSK)
+
+• the reverse of the modulation process
+• Coherent demodulation
+  - The receiver exploits knowledge of the carrier’s phase to detect the signals
+  - Optimal method
+• Noncoherent demodulation
+  - The receiver does not utilize phase reference information
+  - Phase estimation is not required
+  - Suboptimal method
+  
+• Linear Modulation
+  - ASK, PSK, QAM
+  - Non-orthogonal modulation
+  - Baseband signal (M-ary PAM signal) ´ Carrier
+  - Bandwidth efficient
+  - high data rate transmission
+  - High cost
+  - Large PAPR(peak-to-average power ratio)
+  
+• Constant Envelope Modulation
+  - FSK
+  - Orthogonal modulation
+  - Power efficient
+  - Low cost
+  
+
+• Peak-to-Average Power Ratio
+  - PAPR = Peak Power / Average Power
+
+• Large PAPR (peak-to-average power ratio)
+   Requires a large dynamic range of DAC and ADC
+    - Inefficient, quantization noise
+    - large precision is required
+    - meaning a large number of bits (cost)
+    
+   Requires inefficient (large) power back-off
+    - May result in a high out-of-band harmonic distortion power, unless the transmitter's power amplifier exhibits an 
+      extremely high linearity across the entire signal dynamic range
+    - This potentially contaminates the adjacent channels with adjacent channel interference
+ 
+  
