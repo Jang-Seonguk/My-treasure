@@ -1,0 +1,20 @@
+Digital Bandpass Modulation
+
+
+Linear Modulation (bandwidth efficient)
+
+   - ASK  ---->   OOK (Non-coherent)
+          ---->   ASK-SSB ----> VSB (easy implementation)
+          ---->   QAM 
+          
+   - PSK  ----> Differential PSK (Non-coherent)
+          ----> OQPSK, p/4-QPSK (Low cost, power efficient)
+
+
+Orthogonal Modulation (power efficient)
+
+   - FSK  ----> Non-coherent FSK
+          ----> Coherent FSK ----> Continuous-Phase FSK (narrow bandwidth) ----> MSK (Binary) ----> GMSK (narrow bandwidth)
+   
+   - Orthogonal Modulation ----> Bi-orthogonal modulation (bandwidth efficient)
+                           ----> Trans-orthogonal modulation (power efficient)
