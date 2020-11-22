@@ -1,0 +1,203 @@
+Constellation Design / ch.c
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         INCLUDE FILES FOR MODULE                        */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "../Common/global.h"
+#include "../Common/debug.h"
+#include "../Common/chf.h"
+#include "../Common/chn.h"
+#include "../Common/ch.h"
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         LOCAL FUNCTION DECLARATION                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+void CH_NoisyChannel();
+void CH_FadingChannel();
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*        Channel                                                          */
+/*                                                                         */
+/*=========================================================================*/
+
+void CH_Channel(ComplexDouble frame[], int frameLength)
+{
+	ComplexDouble e;			// exponential
+	ComplexDouble temp;
+	int length = CH_param.oversamplingRate * frameLength;
+	int offset = CH_param.oversamplingRate * CH_param.timingOffset;
+	double frequencyOffset = CH_param.frequencyOffset / (double) CH_param.oversamplingRate;
+	double phaseOffset = CH_param.phaseOffset;
+	int i;
+	double pi = 4.0 * atan(1.0);
+
+	// Fading
+	if (CH_param.channelType == FADING_CHANNEL)
+	{
+		CH_FadingChannel(frame,length);
+	}
+
+	// Phase offset
+	for (i = 0; i < length; i++)
+	{
+		e.i = cos(pi * phaseOffset);
+		e.q = sin(pi * phaseOffset);
+		temp.i = frame[i].i;
+		temp.q = frame[i].q;
+		frame[i].i = e.i * temp.i - e.q * temp.q;
+		frame[i].q = e.i * temp.q + e.q * temp.i;
+	}
+
+	// Frequency Offset
+	for (i = 0; i < length; i++)
+	{
+		e.i = cos(pi * i * frequencyOffset);
+		e.q = sin(pi * i * frequencyOffset);
+		temp.i = frame[i].i;
+		temp.q = frame[i].q;
+		frame[i].i = e.i * temp.i - e.q * temp.q;
+		frame[i].q = e.i * temp.q + e.q * temp.i;
+	}
+
+	// Timing Offset
+	for (i = length + offset - 1; i >= offset; i--)
+	{
+		frame[i].i = frame[i - offset].i;
+		frame[i].q = frame[i - offset].q;
+	}
+	for (i = 0; i < offset; i++)
+	{
+		frame[i].i = 0;
+		frame[i].q = 0;
+	}
+
+	// Noise
+	if (CH_param.channelType != IDEAL_CHANNEL)
+	{
+		CH_NoisyChannel(CH_param.snr,frame,length+offset);
+	}
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Initialize Channel                              */
+/*                                                                         */
+/*=========================================================================*/
+
+void CH_Initialize()
+{
+	int i;
+
+	// Initialize multi-path fading
+	for (i = 0; i < CH_MAX_MULTI_PATH; i++)
+	{
+		CH_multiPath[i].i = 0;
+		CH_multiPath[i].q = 0;
+	}
+	CH_multiPath[0].i = 1.0;					// path with no delay
+
+	CHN_Initialize();
+	CHF_Initialize();
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Noisy Channel                                   */
+/*                                                                         */
+/*=========================================================================*/
+
+void CH_NoisyChannel(double snr, ComplexDouble frame[], int frameLength)
+{
+	ComplexFloat noise;
+	double noiseGain;
+	int i;
+
+	// Calculate noise gain
+	noiseGain = sqrt(0.5 / snr);
+
+	// Add noise
+	for (i = 0; i < frameLength; i++)
+	{
+		CHN_ComplexGaussianNoise(&(noise.i),&(noise.q));
+		frame[i].i += noiseGain * noise.i;
+		frame[i].q += noiseGain * noise.q;
+	}
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Fading Channel                                  */
+/*                                                                         */
+/*=========================================================================*/
+
+void CH_FadingChannel(ComplexDouble frame[], int frameLength)
+{
+	ComplexDouble reg[CH_MAX_MULTI_PATH];
+	double multiPathGain;
+	double gain[CH_MAX_MULTI_PATH] = {0.0, -3.0, -6.0, -9.0};
+	ComplexDouble temp;
+	int i, j;
+
+	// Initialize delay line
+	for (i = 0; i < CH_MAX_MULTI_PATH; i++)
+	{
+		reg[i].i = 0;
+		reg[i].q = 0;
+	}
+
+	// Update multi-path fading channel
+	for (i = 0; i < CH_MAX_MULTI_PATH; i++)
+	{
+		// Normalization factor (sqrt(1.8783) = sqrt(10^0 + 10^-0.3 + 10^-0.6 + 10^-0.9))
+		multiPathGain = sqrt(pow(10.0, gain[i] /10.0)) / sqrt(1.8783);
+
+		// Get fading values
+		CHF_Fading(&(temp.i), &(temp.q), i);
+
+		// Multipath values
+		CH_multiPath[i].i = multiPathGain * temp.i;
+		CH_multiPath[i].q = multiPathGain * temp.q;
+	}
+
+	// Fading channel
+	for (j = 0; j < frameLength; j++)
+	{
+		// Update delay line
+		for (i = CH_MAX_MULTI_PATH - 1; i > 0; i--)
+		{
+			reg[i].i = reg[i-1].i;
+			reg[i].q = reg[i-1].q;
+		}
+		reg[0].i = frame[j].i;
+		reg[0].q = frame[j].q;
+
+		// Multi-path fading
+		frame[j].i = 0;
+		frame[j].q = 0;
+		for (i = 0; i < CH_MAX_MULTI_PATH; i++)
+		{
+			frame[j].i += CH_multiPath[i].i * reg[i].i - CH_multiPath[i].q * reg[i].q;
+			frame[j].q += CH_multiPath[i].i * reg[i].q + CH_multiPath[i].q * reg[i].i;
+		}
+	}
+}
