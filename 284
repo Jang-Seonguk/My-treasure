@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.recyclerexample">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+    
+    
+    
+    
+package com.example.recyclerexample;
+
+public class School {
+    // 학교 이름
+    String school_name;
+    // 이미지 아이디
+    int image_id;
+    // 학교 웹 주소
+    String school_url;
+
+    public School (int id, String name, String url) {
+        this.image_id = id;
+        this.school_name = name;
+        this.school_url = url;
+    }
+
+    public String getSchoolName() {
+        return school_name;
+    }
+
+    public int getImageID() {
+        return image_id;
+    }
+
+    public String getURL() {
+        return school_url;
+    }
+}
