@@ -1,0 +1,277 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "../Common/global.h"
+#undef  EXTERN
+#define EXTERN
+#include "../Common/debug.h"
+#include "../Common/ch.h"
+#include "top.h"
+#include "sg.h"
+#include "tx.h"
+#include "rx.h"
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         GLOBAL VARIABLE DECLARATION                     */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+FILE *berFile;	    // Bit Error Rate
+FILE *serFile;      // Symbol Error Rate
+FILE *ferFile;	    // Frame Error Rate
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         LOCAL FUNCTION DECLARATION                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+void Initialize();
+void InitializeSimulation();
+void GenerateSourceData();
+void CountError();
+void ConcludeSimulation();
+void Conclude();
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         main                                            */
+/*                                                                         */
+/*=========================================================================*/
+
+int main()
+{
+	int snr, i, constellation;
+
+	// Select 8QAM constellation (0 ~ NUM_CONSTELLATION - 1)
+	constellation = 5;     // 0 = 직사각형, 2 = 8PSK , 4 = 내가 제안
+	SG_SelectConstellation(constellation);
+
+	// Find minimum distance between constellation points
+	SG_MinDistance();
+
+	// Calculate PAPR (peak-to-average power ratio)
+	SG_PeakToAveragePowerRatio();
+
+	// Initialize program
+	Initialize();
+
+	for (snr = TOP_param.snr.min; snr <= TOP_param.snr.max; snr += TOP_param.snr.step)
+	{
+		// Initialize simulation parameters
+		InitializeSimulation(snr);
+
+		// Simulation
+		for (i = 0; i < TOP_param.numSimulation; i++)
+		{
+			// Generate source data
+			GenerateSourceData();
+
+			// Transmitter
+			TX_Transmitter();
+
+			// Channel
+			CH_Channel(TOP_data.frame,TOP_param.frameLength);
+
+			// Receiver
+			RX_Receiver();
+
+			// Count bit errors & packet errors
+			CountError();
+		}
+
+		// Conclude simulation
+		ConcludeSimulation();
+	}
+
+	// Conclude program
+	Conclude();
+
+	return 0;
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Initialize                                      */
+/*                                                                         */
+/*=========================================================================*/
+
+void Initialize()
+{
+	//---------------------------------
+	// Initialize parameters
+	//---------------------------------
+
+	// Initialize simulation parameters
+	TOP_param.snr.min = 0;						// Minimum SNR
+	TOP_param.snr.max = 20;						// Maximum SNR
+	TOP_param.snr.step = 2;						// Step of SNR
+	TOP_param.numSimulation = 10000;			// # of simulation iterations
+	TOP_param.modulation = QAM8;
+	TOP_param.sourceLength = 96;
+	TOP_param.frameLength = TOP_param.sourceLength / TOP_param.modulation;
+
+	// Initialize channel parameters
+	CH_param.channelType = AWGN_CHANNEL;		// AWGN_CHANNEL
+	CH_param.phaseOffset = 0;					// No phase offset
+	CH_param.frequencyOffset = 0;				// No frequency offset
+	CH_param.timingOffset = 0;					// No timing offset
+	CH_param.oversamplingRate = 1;				// No oversampling
+
+	//---------------------------------
+	// Initialization functions
+	//---------------------------------
+
+	// Initialize channel
+	CH_Initialize();
+
+	//---------------------------------
+	// Open files
+	//---------------------------------
+
+	// Error Rate files
+	berFile = fopen("../Data/Output/ber.txt","w");
+	serFile = fopen("../Data/Output/ser.txt","w");
+	ferFile = fopen("../Data/Output/fer.txt","w");
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Conclude                                        */
+/*                                                                         */
+/*=========================================================================*/
+
+void Conclude()
+{
+	// Close files
+	fclose(berFile);
+	fclose(serFile);
+	fclose(ferFile);
+
+	// Pause
+	DEBUG_PAUSE;
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Initialize Simulation                           */
+/*                                                                         */
+/*=========================================================================*/
+
+void InitializeSimulation(int snr)
+{
+	// SNR calculation
+	TOP_param.snr.dB = snr;
+	TOP_param.snr.linear = pow(10.0, snr/10.0);
+	CH_param.snr = TOP_param.snr.linear;
+
+	// Initialize error counts
+	TOP_data.bitErrorCount = 0;
+	TOP_data.symbolErrorCount = 0;
+	TOP_data.frameErrorCount = 0;
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Conclude Simulation                             */
+/*                                                                         */
+/*=========================================================================*/
+
+void ConcludeSimulation()
+{
+	double ber;		// Bit Error Rate
+	double ser;     // Symbol Error Rate
+	double fer;		// Frame Error Rate
+
+	// Error rate calculation
+	ber = (double) TOP_data.bitErrorCount / (double) (TOP_param.numSimulation * TOP_param.sourceLength);
+	ser = (double) TOP_data.symbolErrorCount / (double) (TOP_param.numSimulation * TOP_param.frameLength);
+	fer = (double) TOP_data.frameErrorCount / (double) TOP_param.numSimulation;
+	DEBUG_PRINT(1)("SNR = %2ddB: BER = %f, SER = %f, FER = %f\n",TOP_param.snr.dB, ber, ser, fer);
+
+	// Write to files
+	fprintf(berFile,"%2d %f\n",TOP_param.snr.dB,ber);
+	fprintf(serFile,"%2d %f\n",TOP_param.snr.dB,ser);
+	fprintf(ferFile,"%2d %f\n",TOP_param.snr.dB,fer);
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Data Generation                                 */
+/*                                                                         */
+/*=========================================================================*/
+
+void GenerateSourceData()
+{
+	int i;
+
+	// Generate random binary data
+	for (i = 0; i < TOP_param.sourceLength; i++)
+	{
+		TOP_data.source[i] = rand() % 2;
+	}
+
+	/**/DEBUG_BEGIN(0)
+	/**/for(i=0;i<TOP_param.sourceLength;i++)
+	/**/DEBUG_PRINT(1)("%d ",TOP_data.source[i]);
+	/**/DEBUG_END
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Count Error                                     */
+/*                                                                         */
+/*=========================================================================*/
+
+void CountError()
+{
+	int bitError = 0;
+	int symbolError = 0;
+	int frameError = 0;
+	int i;
+
+	// Symbol Error Count
+	for (i = 0; i < TOP_param.frameLength; i++)
+    {
+        if (TOP_data.symbolDecision[i] != TOP_data.symbol[i])
+            symbolError++;
+	}
+
+	// Bit Error Count
+	for (i = 0; i < TOP_param.sourceLength; i++)
+	{
+		if (TOP_data.bitDecision[i] != TOP_data.source[i])
+		{
+			bitError++;
+			frameError = 1;
+		}
+	}
+	TOP_data.bitErrorCount += bitError;
+	TOP_data.symbolErrorCount += symbolError;
+	TOP_data.frameErrorCount += frameError;
+
+	/**/DEBUG_BEGIN(0)
+	/**/DEBUG_PRINT(1)("\n\n");
+	/**/for(i=0;i<TOP_param.sourceLength;i++)
+	/**/DEBUG_PRINT(1)("%d ",TOP_data.bitDecision[i]);
+	/**/DEBUG_END
+}
