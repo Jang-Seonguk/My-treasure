@@ -1,0 +1,147 @@
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         INCLUDE FILES FOR MODULE                        */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "../Common/global.h"
+#include "../Common/debug.h"
+#include "top.h"
+#include "sg.h"
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         CONSTANT DECLARATION                            */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+// PI
+#define PI                          3.14159
+
+// # of constellations
+#define NUM_CONSTELLATION           6
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         GLOBAL VARIABLE DECLARATION                     */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         LOCAL FUNCTION DECLARATION                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Select Constellation                            */
+/*                                                                         */
+/*=========================================================================*/
+
+void SG_SelectConstellation(int n)
+{
+    const double A = 1 / sqrt(2);
+    const double B = 2 * cos(PI/6);
+    const double C = cos(PI/8);
+    const double S = sin(PI/8);
+    ComplexDouble constellation[NUM_CONSTELLATION][8] = {
+        {{-3, 1}, {-1, 1}, {1, 1}, {3, 1}, {3, -1}, {1, -1}, {-1, -1}, {-3, -1}},
+        {{-3, -1}, {-3, 1}, {-1, -1}, {-1, 1}, {3, -1}, {3, 1}, {1, -1}, {1, 1}},
+        {{-C, S}, {-S, C}, {S, C}, {C, S}, {C, -S}, {S, -C}, {-S,-C}, {-C, -S}},
+        {{C, S}, {S, C}, {-C, S}, {-S, C}, {C, -S}, {S, -C}, {-C, -S}, {-S, -C}},
+        {{0, 1+B}, {1, 1}, {1+B, 0}, {1, -1}, {0, -1-B}, {-1, -1}, {-1-B, 0}, {-1, 1}},
+        {{-1-B, 0}, {-1, 1}, {-1, -1}, {0, 1+B}, {0, -1-B}, {1, 1}, {1, -1}, {1+B, 0}}
+    };
+    double sum, averageEnergy;
+    int i;
+
+    // Protection
+    if (n < 0 || n >= NUM_CONSTELLATION)
+    {
+        fprintf(stderr, "Invalid constellation number\n");
+        exit(-1);
+    }
+
+    // Compute average energy of the selected constellation
+    for (sum = 0, i = 0; i < 8; i++)
+    {
+        ComplexDouble c = constellation[n][i];
+        sum += c.i * c.i + c.q * c.q;
+
+    }
+    averageEnergy = sum / 8;
+
+    // Normalize
+    printf("8QAM Constellation: \n");
+    for (i = 0; i < 8; i++)
+    {
+        SG_8qam[i].i = constellation[n][i].i / sqrt(averageEnergy);
+        SG_8qam[i].q = constellation[n][i].q / sqrt(averageEnergy);
+        printf("{%.2f, %.2f}\n", SG_8qam[i].i, SG_8qam[i].q);
+    }
+}
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Minimum Distance                                */
+/*                                                                         */
+/*=========================================================================*/
+
+void SG_MinDistance()
+{
+    double distance, minDistance = 10000;
+    int i, j;
+
+    for (i = 1; i < 8; i++)
+    {
+        for (j = 0; j < i; j++)
+        {
+            // Compute distance
+            ComplexDouble d;
+            d.i = SG_8qam[i].i - SG_8qam[j].i;
+            d.q = SG_8qam[i].q - SG_8qam[j].q;
+            distance = sqrt(d.i * d.i + d.q * d.q);
+            if (distance < minDistance)
+                minDistance = distance;
+        }
+    }
+    printf("\nMinimum distance = %.2f\n\n", minDistance);
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         PAPR (Peak-to-Average Power Ratio)              */
+/*                                                                         */
+/*=========================================================================*/
+
+void SG_PeakToAveragePowerRatio()
+{
+    double max = 0, power, powerLogScale;
+    int i;
+
+    // Find max energy point
+    for (i = 0; i < 8; i++)
+    {
+        power = SG_8qam[i].i * SG_8qam[i].i + SG_8qam[i].q * SG_8qam[i].q;
+        if (power > max)
+            max = power;
+    }
+
+    // Calculate power in dB scale
+    powerLogScale = 10 * log10(max);
+    printf("Peak-to-Average-Power Ratio = %.2f dB\n\n", powerLogScale);
+}
