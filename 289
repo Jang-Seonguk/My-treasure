@@ -1,0 +1,97 @@
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         INCLUDE FILES FOR MODULE                        */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "../Common/global.h"
+#include "../Common/ch.h"
+#include "../Common/chf.h"
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         DEFINITION                                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+#define CH_VALUE_LENGTH			10000
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         VARIABLE DESCRIPTION                            */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+	
+ComplexDouble CH_channelValue[CH_MAX_MULTI_PATH][CH_VALUE_LENGTH];
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         LOCAL FUNCTION DECLARATION                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Initialize Fading                               */
+/*                                                                         */
+/*=========================================================================*/
+
+void CHF_Initialize()
+{
+	int i;
+	FILE *fileFading1, *fileFading2, *fileFading3, *fileFading4;
+
+	// Open files
+	fileFading1 = fopen("../Data/ChannelCoeff/path1.txt", "r");
+	fileFading2 = fopen("../Data/ChannelCoeff/path2.txt", "r");
+	fileFading3 = fopen("../Data/ChannelCoeff/path3.txt", "r");
+	fileFading4 = fopen("../Data/ChannelCoeff/path4.txt", "r");
+
+	// Read channel values
+	for (i = 0; i < CH_VALUE_LENGTH; i++)
+	{
+		fscanf(fileFading1, "%lf %lf", &(CH_channelValue[0][i].i), &(CH_channelValue[0][i].q));
+		fscanf(fileFading2, "%lf %lf", &(CH_channelValue[1][i].i), &(CH_channelValue[1][i].q));
+		fscanf(fileFading3, "%lf %lf", &(CH_channelValue[2][i].i), &(CH_channelValue[2][i].q));
+		fscanf(fileFading4, "%lf %lf", &(CH_channelValue[3][i].i), &(CH_channelValue[3][i].q));
+	}
+
+	// Close files
+	fclose(fileFading1);
+	fclose(fileFading2);
+	fclose(fileFading3);
+	fclose(fileFading4);
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Fading Generation                               */
+/*                                                                         */
+/*=========================================================================*/
+
+void CHF_Fading(double *i, double *q, int path)
+{
+	static int index[CH_MAX_MULTI_PATH] = {0,0,0,0};
+
+	// Get channel value
+	*i = CH_channelValue[path][index[path]].i;
+	*q = CH_channelValue[path][index[path]].q;
+
+	// Update index
+	index[path] = (index[path] + 1) % CH_VALUE_LENGTH;
+}
