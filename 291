@@ -1,0 +1,159 @@
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         INCLUDE FILES FOR MODULE                        */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "../Common/debug.h"
+#include "../Common/chn.h"
+#include "../Common/global.h"
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         DEFINITION                                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+#define INITIAL_ISEED	34567
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         VARIABLE DESCRIPTION                            */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+	
+int iseed = INITIAL_ISEED;
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         LOCAL FUNCTION DECLARATION                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+double CHN_Random();
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Random Number Generator                         */
+/*                                                                         */
+/*=========================================================================*/
+
+void CHN_Initialize()
+{
+	int time();
+
+	iseed = time(NULL);
+
+	CHN_Random(&iseed, 1);
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Complex Gaussian Noise                          */
+/*                                                                         */
+/*=========================================================================*/
+
+void CHN_ComplexGaussianNoise(float *ni, float *nq)
+{
+	static int initialization = 1;
+	static double logtbl[8192];
+	static double costbl[8192];
+	static double sintbl[8192];
+	double pi;
+	double pi2;
+	double x1;
+	double x2;
+	double x3;
+	int i;
+
+	// Initialization of log, sin, cos tables
+	if (initialization)
+	{
+		pi = 4.0 * atan(1.0);
+		pi2 = 2.0 * pi;
+		for (i=0;i<8192;i++) {
+         	       logtbl[i] = sqrt(-2.0*log((double)(i+1)/8192.0));
+         	       costbl[i] = cos(pi2/8192.0*(double)i);
+         	       sintbl[i] = sin(pi2/8192.0*(double)i);
+		}
+		initialization = 0;
+	}
+
+	// Normal operation
+	x1 = CHN_Random(&iseed, 0);
+	x2 = CHN_Random(&iseed, 0);
+	x3 = logtbl[(int)(x2*8192.0)];
+	i = (int) (x1 * 8192.0);
+	*ni = (float)(x3 * costbl[i]);
+	*nq = (float)(x3 * sintbl[i]);
+}
+	
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Random Number Generator                         */
+/*                                                                         */
+/*=========================================================================*/
+
+#define MBIG 1000000000
+#define MSEED 161803398
+#define MZ 0
+#define FAC (1.0/MBIG)
+
+double CHN_Random(long *idum, int init)
+{
+	static int inext,inextp;
+	static long ma[56];
+	static int iff=0;
+	long mj,mk;
+	int i,ii,k;
+
+	if (init)
+	{
+		iff = 0;
+		inext = 0;
+		inextp = 0;
+		for (i = 0; i < 56; i++) ma[i] = 0;
+	}
+
+	if (*idum<0 || iff==0) {
+		iff = 1;
+		mj = MSEED-(*idum < 0 ? -*idum : *idum);
+		mj%=MBIG;
+		ma[55]=mj;
+		mk=1;
+		for (i = 1;i <= 54; i++) {
+			ii = (21*i)%55;
+			ma[ii] = mk;
+			mk = mj-mk;
+			if (mk<MZ) mk+= MBIG;
+			mj=ma[ii];
+		}
+		for (k = 1;k <=4; k++)
+			for (i = 1;i <= 55; i++) {
+				ma[i] -= ma[1+(i+30)%55];
+				if (ma[i] < MZ) ma[i] += MBIG;
+			}
+		inext = 0;
+		inextp = 31;
+		*idum=1;
+	}
+	if (++inext == 56) inext = 1;
+	if (++inextp == 56) inextp = 1;
+	mj = ma[inext]-ma[inextp];
+	if (mj < MZ) mj += MBIG;
+	ma[inext]=mj;
+	return mj*FAC;
+}
