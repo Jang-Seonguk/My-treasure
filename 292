@@ -1,0 +1,35 @@
+package com.example.homework;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.ContentValues;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class Main2Activity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+
+        public void addStudent(View view) {
+            ContentValues addValues = new ContentValues();
+            addValues.put(MyContentProvider.NAME, ((EditText)findViewById(R.id.editText)).getText()
+            .toString());
+
+            addValues.put(MyContentProvider.EXPLANATION, ((EditText)findViewById(R.id.editText2)).getText()
+            .toString());
+
+            getContentResolver().insert(MyContentProvider.CONTENT_URI, addValues);
+
+            Toast.makeText(getBaseContext(), "Record Added", Toast.LENGTH_LONG).show();
+        }
+
+
+    }
+}
