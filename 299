@@ -1,0 +1,99 @@
+package com.example.homework;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+
+
+public class Main3Activity extends AppCompatActivity {
+
+    Button b1;
+    String name;
+    String date;
+    String number;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main3);
+
+        // final Intent secondIntent = getIntent();
+        final Intent myIntent = new Intent(this, Main4Activity.class);
+
+        final  PersonAdapter adapter = new PersonAdapter();
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+
+        String[] columns = new String[]{"_id", "student_id", "name","phone_number"};
+        final Cursor c = getContentResolver().query(
+                MyContentProvider.CONTENT_URI, columns, null, null, null, null);
+
+        if (c != null) {
+            while(c.moveToNext()) {
+                name = c.getString(1);
+                date = c.getString(2);
+                number = c.getString(3);
+
+                adapter.addItem(new Person(name, date, number));
+                adapter.notifyDataSetChanged();
+
+            }
+        }
+
+        adapter.setOnItemClickListener(new PersonAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+
+
+                myIntent.putExtra("이름", adapter.getItem(position).Name.toString());
+                myIntent.putExtra("날짜", adapter.getItem(position).Date.toString());
+                myIntent.putExtra("번호", adapter.getItem(position).Number.toString());
+                startActivity(myIntent);
+            }
+        });
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+
+
+
+        b1 = (Button)findViewById(R.id.button4);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final  PersonAdapter adapter = new PersonAdapter();
+                RecyclerView recyclerView = findViewById(R.id.recyclerView);
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+
+            }
+        });
+
+
+
+        // String name = secondIntent.getStringExtra("이름");
+        // String date = secondIntent.getStringExtra("날짜");
+        // String number = secondIntent.getStringExtra("번호");
+        // adapter.addItem(new Person(name, date, number));
+        // adapter.notifyDataSetChanged();
+
+
+    }
+
+}
