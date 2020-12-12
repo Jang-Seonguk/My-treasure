@@ -1,0 +1,82 @@
+package com.example.homework;
+
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class Main2Activity extends AppCompatActivity {
+    Button button;
+    EditText editText1;
+    EditText editText2;
+    EditText editText3;
+    EditText editText4;
+    EditText editText5;
+    ContentValues addValues = new ContentValues();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main2);
+
+        // final PersonAdapter adapter = new PersonAdapter();
+
+        // final Intent Main2Intent = new Intent(this, Main4Activity.class);
+
+        editText1 = findViewById(R.id.editText);
+        editText2 = findViewById(R.id.editText2);
+        editText3 = findViewById(R.id.editText3);
+        editText4 = findViewById(R.id.editText4);
+        editText5 = findViewById(R.id.editText5);
+
+
+        button = (Button)findViewById(R.id.button3);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //String name = editName.getText().toString();
+                //String date = editDate.getText().toString();
+                //String number = editNumber.getText().toString();
+                //myIntent.putExtra("이름", name);
+                //myIntent.putExtra("날짜", date);
+                //myIntent.putExtra("번호", number);
+                //textNum.setText(adapter.getItemCount() + "명");
+
+
+                addValues.put(MyContentProvider.TEXT1, editText1.getText().toString());
+                addValues.put(MyContentProvider.TEXT2, editText2.getText().toString());
+                addValues.put(MyContentProvider.TEXT3, editText3.getText().toString());
+                addValues.put(MyContentProvider.Text4, editText4.getText().toString());
+                addValues.put(MyContentProvider.Text5, editText5.getText().toString());
+
+                getContentResolver().insert(MyContentProvider.CONTENT_URI, addValues);
+                Toast.makeText(getBaseContext(), "Record Added",
+                        Toast.LENGTH_LONG).show();
+
+
+
+            }
+        });
+
+
+    }
+}
