@@ -1,0 +1,290 @@
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         INCLUDE FILES FOR MODULE                        */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "../Common/global.h"
+#undef  EXTERN
+#define EXTERN
+#include "../Common/debug.h"
+#include "../Common/ch.h"
+#include "top.h"
+#include "tx.h"
+#include "rx.h"
+#include "vit.h"
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         GLOBAL VARIABLE DECLARATION                     */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+FILE *TOP_uncodedBerFile;	// Uncoded Bit Error Rate
+FILE *TOP_codedBerFile;		// Coded Bit Error Rate
+FILE *TOP_ferFile;			// Frame Error Rate
+
+
+
+/*-------------------------------------------------------------------------*/
+/*                                                                         */
+/*                         LOCAL FUNCTION DECLARATION                      */
+/*                                                                         */
+/*-------------------------------------------------------------------------*/
+
+void TOP_Initialize();
+void TOP_InitializeSimulation();
+void TOP_GenerateSourceData();
+void TOP_CountError();
+void TOP_ConcludeSimulation();
+void TOP_Conclude();
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         main                                            */
+/*                                                                         */
+/*=========================================================================*/
+
+int main()
+{
+	int snr;
+	int i;
+
+	// Initialize program
+	TOP_Initialize();
+
+	for (snr = TOP_param.snr.min; snr <= TOP_param.snr.max; snr += TOP_param.snr.step)
+	{
+		// Initialize simulation parameters
+		TOP_InitializeSimulation(snr);
+
+		// Simulation
+		for (i = 0; i < TOP_param.numSimulation; i++)
+		{
+			// Generate source data
+			TOP_GenerateSourceData();
+
+			// Convolutional encoding
+			VIT_ConvolutionalEncoder();
+
+			//Transmitter
+			TX_Transmitter();
+
+			// Channel
+			CH_Channel(TOP_data.frame,TOP_param.frameLength);
+
+			// Receiver
+			RX_Receiver();
+
+			//Viterbi decoding
+			VIT_ViterbiDecoder();
+
+			// Count bit errors & packet errors
+			TOP_CountError();
+		}
+
+		// Conclude simulation
+		TOP_ConcludeSimulation();
+	}
+
+
+	// Conclude program
+	TOP_Conclude();
+
+	return 0;
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Initialize                                      */
+/*                                                                         */
+/*=========================================================================*/
+
+void TOP_Initialize()
+{
+	//---------------------------------
+	// Initialize parameters
+	//---------------------------------
+
+	// Initialize simulation parameters
+	TOP_param.snr.min = -10;					// Minimum SNR
+	TOP_param.snr.max = 10;						// Maximum SNR
+	TOP_param.snr.step = 2;						// Step of SNR
+	TOP_param.numSimulation = 1000;				// # of simulation iterations
+	TOP_param.modulation = BPSK;
+	TOP_param.sourceLength = 64;
+	TOP_param.codedLength = TOP_param.sourceLength * VIT_CODE_RATE;
+	TOP_param.frameLength = TOP_param.codedLength / TOP_param.modulation;
+
+	// Initialize channel parameters
+	CH_param.channelType = AWGN_CHANNEL;		// AWGN_CHANNEL
+	CH_param.phaseOffset = 0;					// No phase offset
+	CH_param.frequencyOffset = 0;				// No frequency offset
+	CH_param.timingOffset = 0;					// No timing offset
+	CH_param.oversamplingRate = 1;				// No oversampling
+
+	//---------------------------------
+	// Initialization functions
+	//---------------------------------
+
+	// Initialize channel
+	CH_Initialize();
+
+	//---------------------------------
+	// Open files
+	//---------------------------------
+
+	// Error Rate files
+	TOP_uncodedBerFile = fopen("../Data/Output/uncodedBer.txt","w");
+	TOP_codedBerFile = fopen("../Data/Output/codedBer.txt","w");
+	TOP_ferFile = fopen("../Data/Output/fer.txt","w");
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Conclude                                        */
+/*                                                                         */
+/*=========================================================================*/
+
+void TOP_Conclude()
+{
+	// Close files
+	fclose(TOP_uncodedBerFile);
+	fclose(TOP_codedBerFile);
+	fclose(TOP_ferFile);
+
+	// Pause
+	DEBUG_PAUSE;
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Initialize Simulation                           */
+/*                                                                         */
+/*=========================================================================*/
+
+void TOP_InitializeSimulation(int snr)
+{
+	// SNR calculation
+	TOP_param.snr.dB = snr;
+	TOP_param.snr.linear = pow(10.0, snr/10.0);
+	CH_param.snr = TOP_param.snr.linear;
+
+	// Initialize error counts
+	TOP_data.uncodedBitErrorCount = 0;
+	TOP_data.codedBitErrorCount = 0;
+	TOP_data.frameErrorCount = 0;
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Conclude Simulation                             */
+/*                                                                         */
+/*=========================================================================*/
+
+void TOP_ConcludeSimulation()
+{
+	double uncodedBer;		// Uncoded Bit Error Rate
+	double codedBer;		// Coded Bit Error Rate
+	double fer;			// Frame Error Rate
+
+	// Error rate calculation
+	uncodedBer = (double) TOP_data.uncodedBitErrorCount / (double) (TOP_param.numSimulation * TOP_param.codedLength);
+	codedBer = (double) TOP_data.codedBitErrorCount / (double) (TOP_param.numSimulation * TOP_param.sourceLength);
+	fer = (double) TOP_data.frameErrorCount / (double) TOP_param.numSimulation;
+	DEBUG_PRINT(1)("SNR = %3ddB: uncoded BER = %f, coded BER = %f, FER = %f\n",TOP_param.snr.dB,uncodedBer,codedBer,fer);
+
+	// Write to files
+	fprintf(TOP_uncodedBerFile,"%2d %f\n",TOP_param.snr.dB,uncodedBer);
+	fprintf(TOP_codedBerFile,"%2d %f\n",TOP_param.snr.dB,codedBer);
+	fprintf(TOP_ferFile,"%2d %f\n",TOP_param.snr.dB,fer);
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Data Generation                                 */
+/*                                                                         */
+/*=========================================================================*/
+
+void TOP_GenerateSourceData()
+{
+	int i;
+
+	// Generate random binary data
+	for (i = 0; i < TOP_param.sourceLength - VIT_CONSTRAINT_LENGTH + 1; i++)
+	{
+		TOP_data.source[i] = rand() % 2;
+	}
+
+	// Tail bits
+	for (i = TOP_param.sourceLength - VIT_CONSTRAINT_LENGTH + 1; i < TOP_param.sourceLength; i++)
+	{
+		TOP_data.source[i] = 0;
+	}
+
+	/**/DEBUG_BEGIN(0)
+	/**/for(i=0;i<TOP_param.sourceLength;i++)
+	/**/DEBUG_PRINT(1)("%d ",TOP_data.source[i]);
+	/**/DEBUG_END
+}
+
+
+
+/*=========================================================================*/
+/*                                                                         */
+/*                         Count Error                                     */
+/*                                                                         */
+/*=========================================================================*/
+
+void TOP_CountError()
+{
+	int uncodedBitError = 0;
+	int codedBitError = 0;
+	int frameError = 0;
+	int i;
+
+	// Uncoded Bit Error Count
+	for (i = 0; i < TOP_param.codedLength; i++)
+	{
+		if (TOP_data.coded[i] != TOP_data.hardDecision[i])
+		{
+			uncodedBitError++;
+		}
+	}
+
+	// Coded Bit Error Count and Frame Error Count
+	for (i = 0; i < TOP_param.sourceLength; i++)
+	{
+		if (TOP_data.decoded[i] != TOP_data.source[i])
+		{
+			codedBitError++;
+			frameError = 1;
+		}
+	}
+	TOP_data.uncodedBitErrorCount += uncodedBitError;
+	TOP_data.codedBitErrorCount += codedBitError;
+	TOP_data.frameErrorCount += frameError;
+
+	/**/DEBUG_BEGIN(0)
+	/**/DEBUG_PRINT(1)("\n\n");
+	/**/for(i=0;i<TOP_param.sourceLength;i++)
+	/**/DEBUG_PRINT(1)("%d ",TOP_data.decoded[i]);
+	/**/DEBUG_END
+}
